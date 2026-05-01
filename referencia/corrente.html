@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="day">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corrente — uma prática para o corpo que respira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  /* ════════════════════════════════════════════════════════════
+     CORRENTE · DESIGN SYSTEM v0.1
+     "uma prática para o corpo que respira"
+
+     Modernismo japonês × suíço × piscinas de Hockney
+     ════════════════════════════════════════════════════════════ */
+
+  :root {
+    /* ── DAY (default) ── */
+    --ceramic:       #f2ede4;      /* fundo creme-cerâmica */
+    --ceramic-deep:  #e8e0d0;      /* cerâmica mais escura */
+    --ceramic-warm:  #ebe3d2;
+    --tile:          #ffffff;
+
+    --ink:           #14181d;      /* preto levemente azulado */
+    --ink-soft:      #2a313a;
+    --ink-muted:     #6e7784;
+
+    --pool:          #1e5fb3;      /* azul-piscina saturado */
+    --pool-deep:     #164690;
+    --pool-light:    #9cc4ed;      /* azul raso */
+
+    --brick:         #c74d3a;      /* terracota-tijolo */
+    --brick-soft:    #e08672;
+
+    --yuzu:          #e8d036;      /* amarelo-yuzu */
+    --yuzu-deep:     #b89f1d;
+
+    --sage:          #7a8471;      /* verde-salva suave */
+
+    --concrete:      #a8a294;      /* cinza-concreto */
+    --concrete-soft: #cac5b5;
+
+    /* Tipografia */
+    --font-sans:    'Inter Tight', -apple-system, sans-serif;
+    --font-mono:    'Geist Mono', 'SF Mono', monospace;
+    --font-serif:   'Instrument Serif', Georgia, serif;
+
+    /* Espaço baseline 8 */
+    --s-1: 4px;  --s-2: 8px;   --s-3: 16px;  --s-4: 24px;
+    --s-5: 32px; --s-6: 48px;  --s-7: 64px;  --s-8: 96px;
+    --s-9: 144px; --s-10: 192px;
+
+    /* Motion */
+    --ease-smooth:  cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-flow:    cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ── NIGHT — cerâmica queimada à luz baixa ── */
+  [data-theme="night"] {
+    --ceramic:       #15181c;
+    --ceramic-deep:  #1c1f24;
+    --ceramic-warm:  #1f232a;
+    --tile:          #252a32;
+
+    --ink:           #f2ede4;
+    --ink-soft:      #d8d2c4;
+    --ink-muted:     #7a7a7a;
+
+    --pool:          #4c8bd6;
+    --pool-deep:     #3a6fb5;
+    --pool-light:    #6a9dd4;
+
+    --brick:         #e87256;
+    --brick-soft:    #c4614a;
+
+    --yuzu:          #f2de4a;
+    --yuzu-deep:     #c4b030;
+
+    --sage:          #9da88e;
+
+    --concrete:      #5a5751;
+    --concrete-soft: #3a3832;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; background: var(--ceramic); }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--ceramic);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.6s var(--ease-smooth), color 0.6s var(--ease-smooth);
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Textura sutil de cerâmica */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' seed='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+  [data-theme="night"] body::before { mix-blend-mode: screen; opacity: 0.06; }
+
+  /* ════════════════════════════════════════════════════════════
+     TOPBAR — grid forte
+     ════════════════════════════════════════════════════════════ */
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: var(--s-3) var(--s-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-5);
+    background: color-mix(in srgb, var(--ceramic) 92%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ink);
+    transition: background 0.6s;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .brand-mark {
+    width: 36px; height: 36px;
+    flex-shrink: 0;
+  }
+  .brand-text {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .topbar-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--s-5);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .topbar-nav a {
+    color: var(--ink);
+    text-decoration: none;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.25s;
+  }
+  .topbar-nav a .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-right: 4px;
+    font-weight: 400;
+  }
+  .topbar-nav a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: var(--brick);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-flow);
+  }
+  .topbar-nav a:hover::after { transform: scaleX(1); }
+
+  .topbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Pill toggle */
+  .pill-toggle {
+    display: inline-flex;
+    background: var(--ceramic-deep);
+    border-radius: 999px;
+    padding: 3px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .pill-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--ink-muted);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: 0.04em;
+    transition: all 0.25s;
+  }
+  .pill-toggle button.active {
+    background: var(--ink);
+    color: var(--ceramic);
+  }
+
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+    background: var(--ceramic);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s;
+  }
+  .theme-toggle:hover { background: var(--ink); }
+  .theme-toggle:hover svg { color: var(--ceramic); }
+  .theme-toggle svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--ink);
+    transition: transform 0.5s var(--ease-spring);
+  }
+  [data-theme="night"] .theme-toggle svg { transform: translate(-50%, -50%) rotate(180deg); }
+
+  /* Botão */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 10px 20px;
+    background: var(--ink);
+    color: var(--ceramic);
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-smooth);
+  }
+  .btn:hover {
+    background: var(--brick);
+    border-color: var(--brick);
+    color: var(--ceramic);
+  }
+  .btn.filled-pool { background: var(--pool); border-color: var(--pool); }
+  .btn.filled-pool:hover { background: var(--pool-deep); border-color: var(--pool-deep); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn.ghost:hover {
+    background: var(--ink);
+    color: var(--ceramic);
+  }
+  .btn svg { width: 14px; height: 14px; }
+
+  /* ════════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════════ */
+
+  main { position: relative; z-index: 2; }
+
+  .hero {
+    padding: var(--s-8) var(--s-5) var(--s-9);
+    max-width: 1500px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-meta-top {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-bottom: var(--s-7);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--ink);
+  }
+  .hero-meta-top span { display: inline-flex; align-items: center; gap: 8px; }
+  .hero-meta-top .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--brick);
+    animation: dotPulse 2s infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .hero-title {
+    font-family: var(--font-sans);
+    font-size: clamp(72px, 13vw, 220px);
+    font-weight: 700;
+    line-height: 0.88;
+    letter-spacing: -0.055em;
+    color: var(--ink);
+    margin-bottom: var(--s-5);
+  }
+  .hero-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--brick);
+    letter-spacing: -0.02em;
+  }
+
+  /* Contador em círculo no hero */
+  .hero-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-5);
+    padding: 6px 6px 6px 20px;
+    background: var(--ink);
+    color: var(--ceramic);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .hero-counter-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--yuzu);
+    color: var(--ink);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--s-6);
+    align-items: end;
+    margin-top: var(--s-6);
+  }
+
+  .hero-lede {
+    font-family: var(--font-sans);
+    font-size: clamp(19px, 1.6vw, 24px);
+    line-height: 1.4;
+    color: var(--ink-soft);
+    max-width: 32ch;
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+  .hero-lede em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--pool);
+    font-weight: 400;
+    font-size: 1.1em;
+  }
+
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    align-items: flex-start;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Breathing exercise inline — centro do hero */
+  .breath-card {
+    background: var(--ink);
+    color: var(--ceramic);
+    border-radius: 32px;
+    padding: var(--s-5);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 440px;
+  }
+  .breath-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--s-4);
+  }
+  .breath-card-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ceramic);
+    opacity: 0.65;
+  }
+  .breath-card-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border: 1px solid var(--ceramic);
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+
+  .breath-visual {
+    position: relative;
+    aspect-ratio: 1;
+    max-width: 220px;
+    margin: 0 auto var(--s-4);
+    display: grid;
+    place-items: center;
+  }
+  .breath-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--pool-light) 0%, var(--pool) 70%);
+    position: absolute;
+    animation: breatheCycle 19s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes breatheCycle {
+    0%     { transform: scale(0.55); opacity: 0.8; } /* expire fim */
+    21%    { transform: scale(1);    opacity: 1;   } /* inspire fim (4s) */
+    57%    { transform: scale(1);    opacity: 1;   } /* segurar fim (7s) */
+    100%   { transform: scale(0.55); opacity: 0.8; } /* expire fim (8s) */
+  }
+  .breath-circle-outer {
+    position: absolute;
+    width: 100%; height: 100%;
+    border: 1px dashed rgba(242, 237, 228, 0.3);
+    border-radius: 50%;
+  }
+  .breath-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--ceramic);
+  }
+  .breath-phase {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    animation: phaseCycle 19s step-end infinite;
+  }
+  @keyframes phaseCycle {
+    0%     { content: "Expire"; }
+    21%    { content: "Inspire"; }
+    57%    { content: "Segure"; }
+  }
+  .breath-count {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    opacity: 0.75;
+    text-transform: uppercase;
+  }
+
+  .breath-pattern {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding-top: var(--s-3);
+    border-top: 1px solid rgba(242, 237, 228, 0.15);
+  }
+  .breath-pattern div {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    color: var(--ceramic);
+    opacity: 0.7;
+  }
+  .breath-pattern strong {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ceramic);
+    opacity: 1;
+    margin-bottom: 2px;
+    font-feature-settings: "tnum";
+  }
+
+  /* Stats line abaixo do hero */
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--s-4);
+    padding: var(--s-5) 0 0;
+    margin-top: var(--s-7);
+    border-top: 1px solid var(--ink);
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: var(--s-3);
+    border-right: 1px solid var(--concrete);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--font-sans);
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-feature-settings: "tnum";
+  }
+  .stat-num em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--brick); }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     WAVE DIVIDER — ondas sinusoidais reais
+     ════════════════════════════════════════════════════════════ */
+
+  .wave-divider {
+    width: 100%;
+    padding: var(--s-4) 0;
+    overflow: hidden;
+    color: var(--pool);
+  }
+  .wave-divider svg { display: block; width: 100%; height: 48px; }
+
+  /* ════════════════════════════════════════════════════════════
+     SECTIONS
+     ════════════════════════════════════════════════════════════ */
+
+  .section {
+    padding: var(--s-8) var(--s-5);
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: var(--s-5);
+    align-items: end;
+    margin-bottom: var(--s-7);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--ink);
+  }
+  .section-num {
+    font-family: var(--font-sans);
+    font-size: clamp(80px, 10vw, 160px);
+    font-weight: 700;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: var(--brick);
+    font-feature-settings: "tnum";
+  }
+  .section-title {
+    font-family: var(--font-sans);
+    font-size: clamp(40px, 5.5vw, 88px);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .section-title em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pool);
+  }
+  .section-aside {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-align: right;
+    line-height: 1.4;
+    min-width: 120px;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     PRACTICES GRID — cartões geométricos
+     ════════════════════════════════════════════════════════════ */
+
+  .practices {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--s-3);
+    grid-auto-rows: minmax(220px, auto);
+  }
+
+  .practice {
+    border-radius: 24px;
+    padding: var(--s-5);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s var(--ease-flow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240px;
+    cursor: default;
+  }
+  .practice:hover { transform: translateY(-6px); }
+
+  .practice .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: var(--s-3);
+  }
+  .practice .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .practice .duration {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    opacity: 0.7;
+  }
+  .practice h3 {
+    font-family: var(--font-sans);
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    margin: var(--s-3) 0;
+  }
+  .practice h3 em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .practice p {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.82;
+    max-width: 36ch;
+  }
+
+  .practice-illus {
+    margin-bottom: var(--s-3);
+  }
+
+  /* Variações de carta */
+  .p1 { grid-column: span 3; background: var(--pool); color: var(--ceramic); min-height: 360px; }
+  .p1 h3 { font-size: 52px; }
+  .p1 h3 em { color: var(--yuzu); }
+
+  .p2 { grid-column: span 3; background: var(--yuzu); color: var(--ink); min-height: 360px; }
+  .p2 h3 em { color: var(--brick); }
+
+  .p3 { grid-column: span 2; background: var(--ceramic-deep); color: var(--ink); }
+  .p3 h3 em { color: var(--brick); }
+
+  .p4 { grid-column: span 2; background: var(--brick); color: var(--ceramic); }
+  .p4 h3 em { color: var(--yuzu); }
+
+  .p5 { grid-column: span 2; background: var(--ink); color: var(--ceramic); }
+  .p5 h3 em { color: var(--pool-light); }
+
+  .p6 { grid-column: span 3; background: var(--sage); color: var(--ceramic); }
+  .p6 h3 em { color: var(--yuzu); }
+
+  .p7 { grid-column: span 3; background: var(--ceramic-deep); color: var(--ink); border: 1px solid var(--ink); }
+  .p7 h3 em { color: var(--pool); }
+
+  /* Barra de progresso circular */
+  .circle-chart {
+    position: relative;
+    width: 64px; height: 64px;
+  }
+  .circle-chart svg { transform: rotate(-90deg); }
+  .circle-chart .num-inside {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     APP PREVIEW
+     ════════════════════════════════════════════════════════════ */
+
+  .app-preview {
+    background: var(--ink);
+    border-radius: 32px;
+    padding: 6px;
+    position: relative;
+  }
+  .app-inner {
+    background: var(--ceramic);
+    border-radius: 26px;
+    display: grid;
+    grid-template-columns: 240px 1fr 320px;
+    min-height: 600px;
+    overflow: hidden;
+  }
+
+  .app-sidebar {
+    background: var(--ceramic-warm);
+    padding: var(--s-4);
+    border-right: 1px solid var(--concrete-soft);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  .app-sidebar h5 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+  .sidebar-ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .sidebar-ul li {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 9px 12px;
+    border-radius: 10px;
+    color: var(--ink-soft);
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+  }
+  .sidebar-ul li.active {
+    background: var(--ink);
+    color: var(--ceramic);
+  }
+  .sidebar-ul li .ic {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--pool);
+  }
+  .sidebar-ul li:nth-child(2) .ic { background: var(--brick); border-radius: 2px;}
+  .sidebar-ul li:nth-child(3) .ic { background: var(--yuzu); border-radius: 50%; width: 14px; height: 14px; }
+  .sidebar-ul li:nth-child(4) .ic { background: var(--sage); border-radius: 0; transform: rotate(45deg); width: 10px; height: 10px; }
+  .sidebar-ul li .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+  .sidebar-ul li.active .count { color: var(--ceramic); opacity: 0.7; }
+
+  /* Canvas central */
+  .app-canvas {
+    padding: var(--s-5);
+    background: var(--ceramic);
+  }
+  .canvas-hero {
+    background: var(--pool);
+    color: var(--ceramic);
+    padding: var(--s-5);
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--s-4);
+    align-items: center;
+    margin-bottom: var(--s-4);
+    position: relative;
+    overflow: hidden;
+  }
+  .canvas-hero::after {
+    /* onda decorativa ao fundo */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cpath d='M0 100 Q 50 60 100 100 T 200 100 T 300 100 T 400 100' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='1' fill='none'/%3E%3Cpath d='M0 130 Q 50 100 100 130 T 200 130 T 300 130 T 400 130' stroke='%23ffffff' stroke-opacity='0.08' stroke-width='1' fill='none'/%3E%3C/svg%3E");
+    background-size: cover;
+    pointer-events: none;
+  }
+  .canvas-hero > * { position: relative; z-index: 1; }
+
+  .canvas-title {
+    font-family: var(--font-sans);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .canvas-title em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--yuzu);}
+  .canvas-sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+  }
+  .canvas-play {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--yuzu);
+    border: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+    transition: transform 0.25s;
+  }
+  .canvas-play:hover { transform: scale(1.08); }
+
+  /* Week progress bars */
+  .week-row {
+    display: grid;
+    grid-template-columns: 64px 1fr 60px;
+    gap: var(--s-3);
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--concrete-soft);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .week-row:last-child { border: none; }
+  .week-day { font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+  .week-bar {
+    height: 22px;
+    background: var(--ceramic-deep);
+    border-radius: 999px;
+    position: relative;
+    overflow: hidden;
+  }
+  .week-bar-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background: var(--pool);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ceramic);
+  }
+  .week-bar-fill.brick { background: var(--brick); }
+  .week-bar-fill.yuzu  { background: var(--yuzu); color: var(--ink); }
+  .week-bar-fill.sage  { background: var(--sage); }
+  .week-value {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink);
+    text-align: right;
+    font-feature-settings: "tnum";
+  }
+
+  /* Painel direito: detalhe */
+  .app-side {
+    padding: var(--s-5);
+    background: var(--ceramic-warm);
+    border-left: 1px solid var(--concrete-soft);
+  }
+  .app-side h4 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--concrete-soft);
+    margin-bottom: var(--s-3);
+    font-weight: 500;
+  }
+
+  .big-number {
+    font-family: var(--font-sans);
+    font-size: 88px;
+    font-weight: 700;
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: var(--ink);
+    font-feature-settings: "tnum";
+  }
+  .big-number em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--brick);
+    font-weight: 400;
+    font-size: 0.55em;
+  }
+  .big-number-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--concrete-soft);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .metric:last-child { border: none; }
+  .metric strong {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 15px;
+    font-feature-settings: "tnum";
+  }
+  .metric .change {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+  .metric .change.up { background: var(--pool-light); color: var(--pool-deep); }
+  .metric .change.down { background: var(--brick-soft); color: var(--brick); }
+
+  /* ════════════════════════════════════════════════════════════
+     TIPOGRAFIA
+     ════════════════════════════════════════════════════════════ */
+
+  .type-block {
+    background: var(--ceramic-deep);
+    border-radius: 24px;
+    padding: var(--s-7);
+  }
+
+  .type-huge {
+    font-family: var(--font-sans);
+    font-size: clamp(140px, 22vw, 320px);
+    font-weight: 800;
+    line-height: 0.82;
+    letter-spacing: -0.065em;
+    text-align: center;
+    color: var(--ink);
+  }
+  .type-huge em {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--pool);
+    letter-spacing: -0.02em;
+  }
+  .type-huge .amp {
+    color: var(--brick);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    display: inline-block;
+    transform: translateY(-0.08em);
+  }
+
+  .type-families {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-4);
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--concrete);
+  }
+  .type-fam {
+    background: var(--ceramic);
+    border-radius: 16px;
+    padding: var(--s-4);
+  }
+  .tf-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: var(--s-2);
+    display: flex;
+    justify-content: space-between;
+  }
+  .tf-name {
+    font-family: var(--font-sans);
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: var(--s-3);
+  }
+  .tf-name em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--brick);}
+  .tf-sample { font-size: 14px; line-height: 1.55; color: var(--ink-soft); }
+  .tf-sample.display { font-family: var(--font-serif); font-style: italic; font-size: 22px; color: var(--ink); line-height: 1.2; }
+  .tf-sample.body { font-family: var(--font-sans); }
+  .tf-sample.body em { font-family: var(--font-serif); font-style: italic; }
+  .tf-sample.mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em; }
+
+  /* Escala */
+  .type-scale {
+    margin-top: var(--s-5);
+    padding: var(--s-4);
+    background: var(--ceramic);
+    border-radius: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+  }
+  .type-scale span {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink);
+    font-feature-settings: "tnum";
+  }
+
+  /* ════════════════════════════════════════════════════════════
+     PALETA
+     ════════════════════════════════════════════════════════════ */
+
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--s-3);
+    margin-bottom: var(--s-6);
+  }
+
+  .tile {
+    border-radius: 20px;
+    padding: var(--s-4);
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile-name {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .tile-role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+  .tile-hex {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    font-feature-settings: "tnum";
+  }
+  .tile-pool { background: var(--pool); color: var(--ceramic); }
+  .tile-brick { background: var(--brick); color: var(--ceramic); }
+  .tile-yuzu { background: var(--yuzu); color: var(--ink); }
+  .tile-sage { background: var(--sage); color: var(--ceramic); }
+  .tile-ink { background: var(--ink); color: var(--ceramic); }
+  .tile-ceramic { background: var(--ceramic-warm); color: var(--ink); border: 1px solid var(--ink); }
+
+  /* COMPONENTES */
+  .comp-block {
+    background: var(--ceramic-warm);
+    border-radius: 20px;
+    padding: var(--s-5);
+  }
+  .comp-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--concrete-soft);
+    margin-bottom: var(--s-4);
+  }
+  .comp-row {
+    display: flex;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--s-4) 0;
+    border-bottom: 1px dashed var(--concrete-soft);
+  }
+  .comp-row:last-child { border: none; padding-bottom: 0; }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--ceramic);
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .chip.pool { background: var(--pool); color: var(--ceramic); border-color: var(--pool); }
+  .chip.yuzu { background: var(--yuzu); color: var(--ink); border-color: var(--yuzu); }
+  .chip.brick { background: var(--brick); color: var(--ceramic); border-color: var(--brick); }
+
+  .search-field {
+    min-width: 280px;
+    background: var(--ceramic);
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+  }
+  .search-field::placeholder { color: var(--ink-muted); font-style: italic; }
+  .search-field:focus { border-color: var(--brick); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brick) 20%, transparent); }
+
+  .toggle-switch {
+    width: 46px; height: 24px;
+    background: var(--concrete);
+    border-radius: 999px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+  .toggle-switch::after {
+    content: "";
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--ceramic);
+    transition: left 0.3s var(--ease-spring);
+  }
+  .toggle-switch.on { background: var(--pool); }
+  .toggle-switch.on::after { left: 25px; }
+
+  /* CTA final */
+  .final-cta {
+    max-width: 1500px;
+    margin: var(--s-8) auto;
+    padding: var(--s-8) var(--s-5);
+    background: var(--ink);
+    color: var(--ceramic);
+    border-radius: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 400'%3E%3Cpath d='M0 200 Q 100 120 200 200 T 400 200 T 600 200 T 800 200' stroke='%23ffffff' stroke-opacity='0.06' stroke-width='1.2' fill='none'/%3E%3Cpath d='M0 260 Q 100 180 200 260 T 400 260 T 600 260 T 800 260' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='1.2' fill='none'/%3E%3Cpath d='M0 320 Q 100 240 200 320 T 400 320 T 600 320 T 800 320' stroke='%23ffffff' stroke-opacity='0.04' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");
+    background-size: cover;
+    pointer-events: none;
+  }
+  .final-cta > * { position: relative; z-index: 1; }
+
+  .final-title {
+    font-family: var(--font-sans);
+    font-size: clamp(48px, 8vw, 140px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--s-5);
+    max-width: 16ch;
+  }
+  .final-title em { font-family: var(--font-serif); font-style: italic; font-weight: 400; color: var(--yuzu); }
+
+  .final-sub {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    color: var(--concrete-soft);
+    max-width: 44ch;
+    margin-bottom: var(--s-5);
+    line-height: 1.5;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: var(--s-7) var(--s-5) var(--s-5);
+    max-width: 1500px;
+    margin: 0 auto;
+    border-top: 1px solid var(--ink);
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: 2.5fr repeat(4, 1fr);
+    gap: var(--s-5);
+  }
+  .footer-brand-text {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    margin-top: var(--s-3);
+  }
+  .footer-brand-text em { font-family: var(--font-serif); font-style: italic; color: var(--brick);}
+
+  .footer-cols h5 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: var(--s-3);
+    font-weight: 500;
+  }
+  .footer-cols ul { list-style: none; }
+  .footer-cols li { padding: 4px 0; }
+  .footer-cols a {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .footer-cols a:hover { color: var(--brick); }
+
+  .footer-foot {
+    margin-top: var(--s-6);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--concrete-soft);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  /* ANIMATIONS */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-meta-top, .hero-title, .hero-counter, .hero-lede, .hero-actions, .breath-card, .hero-stats {
+    opacity: 0;
+    animation: rise 0.9s var(--ease-flow) forwards;
+  }
+  .hero-meta-top { animation-delay: 0.05s; }
+  .hero-counter { animation-delay: 0.1s; }
+  .hero-title { animation-delay: 0.2s; }
+  .hero-lede { animation-delay: 0.45s; }
+  .hero-actions { animation-delay: 0.6s; }
+  .breath-card { animation-delay: 0.35s; animation-duration: 1.2s; }
+  .hero-stats { animation-delay: 0.75s; }
+
+  /* Responsive */
+  @media (max-width: 960px) {
+    .topbar-nav { display: none; }
+    .topbar { grid-template-columns: auto auto; }
+    .hero-grid { grid-template-columns: 1fr; gap: var(--s-5); }
+    .hero-stats { grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+    .hero-stats .stat { border-right: none; }
+    .section-head { grid-template-columns: 1fr; gap: var(--s-2); }
+    .practices { grid-template-columns: 1fr 1fr; }
+    .p1, .p2, .p3, .p4, .p5, .p6, .p7 { grid-column: span 2; min-height: 240px; }
+    .app-inner { grid-template-columns: 1fr; }
+    .app-sidebar, .app-canvas { border-right: none; border-bottom: 1px solid var(--concrete-soft); }
+    .app-side { border-left: none; }
+    .type-families { grid-template-columns: 1fr; }
+    .footer-cols { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+  <a href="#" class="brand">
+    <svg class="brand-mark" viewBox="0 0 36 36" fill="none">
+      <!-- logo: três ondas concêntricas + círculo central -->
+      <path d="M4 18 Q 10 12 16 18 T 28 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      <path d="M6 24 Q 12 18 18 24 T 30 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.5"/>
+      <path d="M6 12 Q 12 6 18 12 T 30 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.75"/>
+      <circle cx="18" cy="18" r="3" fill="var(--brick)"/>
+    </svg>
+    <div class="brand-text">Corrente</div>
+  </a>
+
+  <nav class="topbar-nav">
+    <a href="#practices"><span class="num">01</span>Práticas</a>
+    <a href="#app"><span class="num">02</span>O app</a>
+    <a href="#letters"><span class="num">03</span>Tipografia</a>
+    <a href="#palette"><span class="num">04</span>Paleta</a>
+  </nav>
+
+  <div class="topbar-controls">
+    <div class="pill-toggle">
+      <button id="loc-pt" class="active">PT</button>
+      <button id="loc-en">EN</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
+    <a href="#" class="btn" data-i18n="cta">Abrir o app
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+
+  <div class="hero-meta-top">
+    <span><span class="dot"></span><span data-i18n="live">TRANSMITINDO · 08:14 · SÃO PAULO</span></span>
+    <span data-i18n="ver">v0.9 BETA · EDIÇÃO DE OUTONO</span>
+    <span data-i18n="mmx">★ MMXXVI</span>
+  </div>
+
+  <div class="hero-counter">
+    <span class="hero-counter-num">4</span>
+    <span data-i18n="hCounter">PRÁTICAS HOJE · 2 COMPLETAS · 18 MIN RESTANTES</span>
+  </div>
+
+  <h1 class="hero-title" data-i18n="hero">
+    Respire,<br>
+    <em>nade,</em><br>
+    pertença.
+  </h1>
+
+  <div class="hero-grid">
+    <div>
+      <p class="hero-lede" data-i18n="lede">
+        Corrente é uma prática diária de <em>respiração, água e atenção</em>. Dez minutos por manhã, trinta por dia. Um corpo que lembra de si mesmo.
+      </p>
+
+      <div class="hero-actions" style="margin-top: var(--s-5);">
+        <a href="#" class="btn filled-pool" data-i18n="cta1">Começar 7 dias grátis
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#app" class="btn ghost" data-i18n="cta2">Ver uma prática</a>
+      </div>
+    </div>
+
+    <div class="hero-right" style="justify-self: end;">
+      <!-- BREATHING CARD — respira de verdade -->
+      <div class="breath-card">
+        <div class="breath-card-top">
+          <div class="breath-card-label" data-i18n="bpLabel">★ BOX BREATHING · 4-7-8</div>
+          <div class="breath-card-badge" data-i18n="bpBadge">AO VIVO</div>
+        </div>
+
+        <div class="breath-visual">
+          <div class="breath-circle-outer"></div>
+          <div class="breath-circle"></div>
+          <div class="breath-text">
+            <div class="breath-phase" id="breathPhase" data-i18n="bpInspire">inspire</div>
+            <div class="breath-count" id="breathCount">4 / 4</div>
+          </div>
+        </div>
+
+        <div class="breath-pattern">
+          <div><strong>4s</strong><span data-i18n="bpIn">inspire</span></div>
+          <div><strong>7s</strong><span data-i18n="bpHold">segure</span></div>
+          <div><strong>8s</strong><span data-i18n="bpOut">solte</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">21<em>.4</em>k</div>
+      <div class="stat-label" data-i18n="s1">PRATICANTES ATIVOS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4<em>.9</em></div>
+      <div class="stat-label" data-i18n="s2">APP STORE · 8.2K RESENHAS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">42<em>min</em></div>
+      <div class="stat-label" data-i18n="s3">MÉDIA DIÁRIA</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">87<em>%</em></div>
+      <div class="stat-label" data-i18n="s4">RETORNAM NO 30º DIA</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ WAVE DIVIDER ═══════════ -->
+<div class="wave-divider">
+  <svg viewBox="0 0 1200 48" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 24 Q 60 8 120 24 T 240 24 T 360 24 T 480 24 T 600 24 T 720 24 T 840 24 T 960 24 T 1080 24 T 1200 24" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <path d="M0 32 Q 60 16 120 32 T 240 32 T 360 32 T 480 32 T 600 32 T 720 32 T 840 32 T 960 32 T 1080 32 T 1200 32" stroke="currentColor" stroke-width="1" stroke-opacity="0.5" fill="none"/>
+  </svg>
+</div>
+
+<!-- ═══════════ PRÁTICAS ═══════════ -->
+<section class="section" id="practices">
+  <div class="section-head">
+    <div class="section-num">01</div>
+    <div>
+      <h2 class="section-title" data-i18n="pracTitle">Sete <em>práticas</em>,<br>um só ritmo.</h2>
+    </div>
+    <div class="section-aside" data-i18n="pracAside">7 MÓDULOS<br>42 FAIXAS<br>ATUALIZADAS</div>
+  </div>
+
+  <div class="practices">
+
+    <!-- Carta 1 (pool) destaque -->
+    <article class="practice p1">
+      <div class="top">
+        <span class="num" data-i18n="p1num">№ 01 · RESPIRAÇÃO</span>
+        <span class="duration">4–12 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <!-- Círculo com ondas expandindo -->
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2">
+            <circle cx="32" cy="32" r="6" fill="currentColor"/>
+            <circle cx="32" cy="32" r="14" stroke-opacity="0.5"/>
+            <circle cx="32" cy="32" r="22" stroke-opacity="0.3" stroke-dasharray="2 3"/>
+            <circle cx="32" cy="32" r="30" stroke-opacity="0.15"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p1t">Box breathing <em>diário</em>.</h3>
+        <p data-i18n="p1b">Quatro-sete-oito segundos, repetidos com um círculo que respira junto. Três minutos bastam para um sistema nervoso pedir desculpas.</p>
+      </div>
+    </article>
+
+    <!-- Carta 2 (yuzu) -->
+    <article class="practice p2">
+      <div class="top">
+        <span class="num" data-i18n="p2num">№ 02 · MOVIMENTO</span>
+        <span class="duration">12–25 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <!-- Linhas ondulantes = natação -->
+          <svg width="80" height="48" viewBox="0 0 80 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M4 12 Q 14 4 24 12 T 44 12 T 64 12 T 76 12"/>
+            <path d="M4 24 Q 14 16 24 24 T 44 24 T 64 24 T 76 24" stroke-opacity="0.65"/>
+            <path d="M4 36 Q 14 28 24 36 T 44 36 T 64 36 T 76 36" stroke-opacity="0.35"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p2t">Natação para <em>mentes terrestres</em>.</h3>
+        <p data-i18n="p2b">Sequências curtas de alongamento aquático, flutuação guiada, e desaceleração pós-treino. Adaptado para piscina, mar, rio.</p>
+      </div>
+    </article>
+
+    <!-- Carta 3 (ceramic) -->
+    <article class="practice p3">
+      <div class="top">
+        <span class="num" data-i18n="p3num">№ 03 · ATENÇÃO</span>
+        <span class="duration">5 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="24" cy="24" r="20"/>
+            <circle cx="24" cy="24" r="2" fill="var(--brick)" stroke="none"/>
+            <line x1="24" y1="4" x2="24" y2="10"/>
+            <line x1="24" y1="38" x2="24" y2="44"/>
+            <line x1="4" y1="24" x2="10" y2="24"/>
+            <line x1="38" y1="24" x2="44" y2="24"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p3t">Escaneamento <em>corporal</em>.</h3>
+        <p data-i18n="p3b">Do topo da cabeça aos pés, parte por parte. Acorda o que dormiu, relaxa o que apertou.</p>
+      </div>
+    </article>
+
+    <!-- Carta 4 (brick) -->
+    <article class="practice p4">
+      <div class="top">
+        <span class="num" data-i18n="p4num">№ 04 · TERMO</span>
+        <span class="duration">2–8 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+            <rect x="20" y="8" width="8" height="26" rx="4" fill="currentColor" fill-opacity="0.2"/>
+            <rect x="20" y="8" width="8" height="26" rx="4"/>
+            <circle cx="24" cy="38" r="6" fill="var(--yuzu)" stroke-width="1.4"/>
+            <path d="M24 20 L 24 34"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p4t">Banhos <em>alternados</em>.</h3>
+        <p data-i18n="p4b">Temperatura como prática: frio, morno, frio. Protocolo gentil para adaptação progressiva.</p>
+      </div>
+    </article>
+
+    <!-- Carta 5 (ink) -->
+    <article class="practice p5">
+      <div class="top">
+        <span class="num" data-i18n="p5num">№ 05 · NOITE</span>
+        <span class="duration">10 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M38 26 A 14 14 0 1 1 22 10 A 10 10 0 0 0 38 26 Z" fill="var(--pool-light)" fill-opacity="0.4" stroke="currentColor"/>
+            <circle cx="36" cy="12" r="0.8" fill="currentColor"/>
+            <circle cx="42" cy="18" r="0.8" fill="currentColor"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p5t">Prática <em>noturna</em>.</h3>
+        <p data-i18n="p5b">Respiração lenta e meditação guiada para dormir antes da meia-noite. Sem voz assustada.</p>
+      </div>
+    </article>
+
+    <!-- Carta 6 (sage) -->
+    <article class="practice p6">
+      <div class="top">
+        <span class="num" data-i18n="p6num">№ 06 · COMUNIDADE</span>
+        <span class="duration">30 min</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <svg width="72" height="44" viewBox="0 0 72 44" fill="none" stroke="currentColor" stroke-width="1.4">
+            <circle cx="12" cy="22" r="6" fill="currentColor" fill-opacity="0.3"/>
+            <circle cx="36" cy="22" r="6" fill="currentColor" fill-opacity="0.5"/>
+            <circle cx="60" cy="22" r="6" fill="currentColor" fill-opacity="0.3"/>
+            <line x1="18" y1="22" x2="30" y2="22" stroke-dasharray="2 2"/>
+            <line x1="42" y1="22" x2="54" y2="22" stroke-dasharray="2 2"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p6t">Sessões <em>em grupo</em>.</h3>
+        <p data-i18n="p6b">Prática guiada ao vivo com até 12 pessoas. Câmeras opcionais, vozes bem-vindas. Toda terça às 19h.</p>
+      </div>
+    </article>
+
+    <!-- Carta 7 -->
+    <article class="practice p7">
+      <div class="top">
+        <span class="num" data-i18n="p7num">№ 07 · REGISTRO</span>
+        <span class="duration">passivo</span>
+      </div>
+      <div>
+        <div class="practice-illus">
+          <svg width="56" height="42" viewBox="0 0 56 42" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="4" y="4" width="48" height="34" rx="4"/>
+            <line x1="4" y1="14" x2="52" y2="14"/>
+            <circle cx="10" cy="9" r="1" fill="currentColor"/>
+            <circle cx="14" cy="9" r="1" fill="currentColor"/>
+            <path d="M10 22 L 20 22 L 24 18 L 30 26 L 34 22 L 44 22" stroke="var(--brick)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 data-i18n="p7t">Seu <em>ritmo</em>, mapeado.</h3>
+        <p data-i18n="p7b">Dados que importam: constância, humor, qualidade do sono. O resto é ruído.</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ═══════════ APP PREVIEW ═══════════ -->
+<section class="section" id="app">
+  <div class="section-head">
+    <div class="section-num">02</div>
+    <div>
+      <h2 class="section-title" data-i18n="appTitle">O app, <em>em exercício</em>.</h2>
+    </div>
+    <div class="section-aside" data-i18n="appAside">iOS · ANDROID<br>WEB · WATCH</div>
+  </div>
+
+  <div class="app-preview">
+    <div class="app-inner">
+
+      <aside class="app-sidebar">
+        <div>
+          <h5 data-i18n="sHoje">Hoje · quinta</h5>
+          <ul class="sidebar-ul">
+            <li class="active"><span class="ic"></span><span data-i18n="s1">Respiração</span><span class="count">4m</span></li>
+            <li><span class="ic"></span><span data-i18n="s2">Movimento</span><span class="count">18m</span></li>
+            <li><span class="ic"></span><span data-i18n="s3">Atenção</span><span class="count">5m</span></li>
+            <li><span class="ic"></span><span data-i18n="s4">Noite</span><span class="count">10m</span></li>
+          </ul>
+        </div>
+        <div>
+          <h5 data-i18n="sCol">Coleções</h5>
+          <ul class="sidebar-ul">
+            <li><span class="ic" style="background: var(--pool-light)"></span><span data-i18n="c1">Para iniciantes</span><span class="count">12</span></li>
+            <li><span class="ic" style="background: var(--brick-soft)"></span><span data-i18n="c2">Pós-treino</span><span class="count">8</span></li>
+            <li><span class="ic" style="background: var(--sage)"></span><span data-i18n="c3">Antes de dormir</span><span class="count">6</span></li>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="app-canvas">
+        <!-- Hero do canvas: a prática atual -->
+        <div class="canvas-hero">
+          <div>
+            <div class="canvas-sub" data-i18n="canvasSub">★ PRÁTICA DE RESPIRAÇÃO · 04:00</div>
+            <div class="canvas-title" data-i18n="canvasTitle">Manhã <em>lenta</em>, coração aberto</div>
+          </div>
+          <button class="canvas-play" aria-label="play">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5 3 L 16 10 L 5 17 Z"/>
+            </svg>
+          </button>
+        </div>
+
+        <h5 style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px;" data-i18n="week">ESTA SEMANA · MINUTOS DE PRÁTICA</h5>
+
+        <div class="week-row">
+          <span class="week-day" data-i18n="d1">SEG</span>
+          <div class="week-bar"><div class="week-bar-fill" style="width: 78%;">42</div></div>
+          <span class="week-value">42m</span>
+        </div>
+        <div class="week-row">
+          <span class="week-day" data-i18n="d2">TER</span>
+          <div class="week-bar"><div class="week-bar-fill yuzu" style="width: 52%;">28</div></div>
+          <span class="week-value">28m</span>
+        </div>
+        <div class="week-row">
+          <span class="week-day" data-i18n="d3">QUA</span>
+          <div class="week-bar"><div class="week-bar-fill brick" style="width: 94%;">52</div></div>
+          <span class="week-value">52m</span>
+        </div>
+        <div class="week-row">
+          <span class="week-day" data-i18n="d4">QUI</span>
+          <div class="week-bar"><div class="week-bar-fill sage" style="width: 38%;">18</div></div>
+          <span class="week-value">18m <span style="color: var(--ink-muted); font-family: var(--font-mono); font-size: 10px;" data-i18n="now">agora</span></span>
+        </div>
+        <div class="week-row">
+          <span class="week-day" data-i18n="d5">SEX</span>
+          <div class="week-bar"></div>
+          <span class="week-value" style="color: var(--ink-muted);">—</span>
+        </div>
+        <div class="week-row">
+          <span class="week-day" data-i18n="d6">SÁB</span>
+          <div class="week-bar"></div>
+          <span class="week-value" style="color: var(--ink-muted);">—</span>
+        </div>
+      </div>
+
+      <aside class="app-side">
+        <h4 data-i18n="sWeek">Resumo da semana</h4>
+
+        <div style="padding-bottom: var(--s-4); margin-bottom: var(--s-4); border-bottom: 1px solid var(--concrete-soft);">
+          <div class="big-number">2<em>h</em>20</div>
+          <div class="big-number-label" data-i18n="totalMin">TOTAL · DE 3H SEMANAIS</div>
+        </div>
+
+        <h4 data-i18n="sStats">Métricas</h4>
+        <div class="metric">
+          <span data-i18n="m1">Sequência</span>
+          <span>
+            <strong>14 dias</strong>
+            <span class="change up">+3</span>
+          </span>
+        </div>
+        <div class="metric">
+          <span data-i18n="m2">FC repouso</span>
+          <span>
+            <strong>58 bpm</strong>
+            <span class="change up">−4</span>
+          </span>
+        </div>
+        <div class="metric">
+          <span data-i18n="m3">Sono profundo</span>
+          <span>
+            <strong>1h 42m</strong>
+            <span class="change up">+12m</span>
+          </span>
+        </div>
+        <div class="metric">
+          <span data-i18n="m4">Humor</span>
+          <span>
+            <strong data-i18n="mood">sereno</strong>
+          </span>
+        </div>
+        <div class="metric">
+          <span data-i18n="m5">Hidratação</span>
+          <span>
+            <strong>1.8L</strong>
+            <span class="change down">−0.3L</span>
+          </span>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TIPOGRAFIA ═══════════ -->
+<section class="section" id="letters">
+  <div class="section-head">
+    <div class="section-num">03</div>
+    <div>
+      <h2 class="section-title" data-i18n="typeTitle">Três <em>letras</em>,<br>uma voz só.</h2>
+    </div>
+    <div class="section-aside" data-i18n="typeAside">SANS · SERIF<br>MONO</div>
+  </div>
+
+  <div class="type-block">
+    <div class="type-huge">Aa<span class="amp"> &amp; </span><em>Aa</em></div>
+
+    <div class="type-families">
+      <div class="type-fam">
+        <div class="tf-label"><span>DISPLAY · BODY</span><span>700/500/400</span></div>
+        <div class="tf-name">Inter Tight</div>
+        <div class="tf-sample body" data-i18n="tyB">A sans-serif variável da Rasmus Andersson com a largura reduzida — otimizada para densidade vertical e hierarquia clara. Com <em>itálicos ocasionais</em> em Instrument Serif para calor humano.</div>
+      </div>
+      <div class="type-fam">
+        <div class="tf-label"><span>ACENTO · ITÁLICO</span><span>400</span></div>
+        <div class="tf-name">Instrument <em>Serif</em></div>
+        <div class="tf-sample display" data-i18n="tyD">"A água ensina o que a terra não consegue — que a forma pode mudar sem perder o que se é."</div>
+      </div>
+      <div class="type-fam">
+        <div class="tf-label"><span>MONO</span><span>500/400</span></div>
+        <div class="tf-name">Geist <em>Mono</em></div>
+        <div class="tf-sample mono">--pool: #1e5fb3;<br>--brick: #c74d3a;<br>// ritmo: 4-7-8<br>// baseline: 8px</div>
+      </div>
+    </div>
+
+    <div class="type-scale">
+      <span style="font-size: 88px;">88</span>
+      <span style="font-size: 56px;">56</span>
+      <span style="font-size: 40px;">40</span>
+      <span style="font-size: 28px;">28</span>
+      <span style="font-size: 20px;">20</span>
+      <span style="font-size: 17px;">17</span>
+      <span style="font-size: 14px;">14</span>
+      <span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-muted);">12</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PALETA & COMPONENTES ═══════════ -->
+<section class="section" id="palette">
+  <div class="section-head">
+    <div class="section-num">04</div>
+    <div>
+      <h2 class="section-title" data-i18n="paletteTitle">Seis <em>cores</em>,<br>seis estados de corpo.</h2>
+    </div>
+    <div class="section-aside" data-i18n="paletteAside">ACESSIBILIDADE<br>AAA</div>
+  </div>
+
+  <div class="palette-grid">
+    <div class="tile tile-pool">
+      <div>
+        <div class="tile-name">Piscina</div>
+        <div class="tile-role" data-i18n="r1">PRIMÁRIA · ÁGUA</div>
+      </div>
+      <div class="tile-hex">#1E5FB3</div>
+    </div>
+    <div class="tile tile-brick">
+      <div>
+        <div class="tile-name">Tijolo</div>
+        <div class="tile-role" data-i18n="r2">ACENTO · PELE</div>
+      </div>
+      <div class="tile-hex">#C74D3A</div>
+    </div>
+    <div class="tile tile-yuzu">
+      <div>
+        <div class="tile-name">Yuzu</div>
+        <div class="tile-role" data-i18n="r3">DESTAQUE · SOL</div>
+      </div>
+      <div class="tile-hex">#E8D036</div>
+    </div>
+    <div class="tile tile-sage">
+      <div>
+        <div class="tile-name">Salva</div>
+        <div class="tile-role" data-i18n="r4">SECUNDÁRIA · FOLHA</div>
+      </div>
+      <div class="tile-hex">#7A8471</div>
+    </div>
+    <div class="tile tile-ink">
+      <div>
+        <div class="tile-name">Tinta</div>
+        <div class="tile-role" data-i18n="r5">TEXTO · NOITE</div>
+      </div>
+      <div class="tile-hex">#14181D</div>
+    </div>
+    <div class="tile tile-ceramic">
+      <div>
+        <div class="tile-name">Cerâmica</div>
+        <div class="tile-role" data-i18n="r6">BASE · LUZ</div>
+      </div>
+      <div class="tile-hex">#F2EDE4</div>
+    </div>
+  </div>
+
+  <div class="comp-block">
+    <div class="comp-label" data-i18n="compT">COMPONENTES · AMOSTRAS</div>
+
+    <div class="comp-row">
+      <button class="btn" data-i18n="bPrim">Começar prática
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn filled-pool" data-i18n="bPool">Azul · pool</button>
+      <button class="btn ghost" data-i18n="bGhost">Fantasma</button>
+      <span class="chip">default</span>
+      <span class="chip pool" data-i18n="chActive">● ativo</span>
+      <span class="chip yuzu" data-i18n="chNew">★ novo</span>
+      <span class="chip brick" data-i18n="chFire">● em sequência</span>
+    </div>
+
+    <div class="comp-row">
+      <input type="text" class="search-field" placeholder="Buscar uma prática…" data-i18n-ph="ph1">
+      <div class="toggle-switch on" role="switch" aria-checked="true" id="toggle1"></div>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); letter-spacing: 0.05em;" data-i18n="togLabel">lembretes diários · ativado</span>
+    </div>
+
+    <div class="comp-row">
+      <div class="circle-chart">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" stroke="var(--ceramic-deep)" stroke-width="4" fill="none"/>
+          <circle cx="32" cy="32" r="28" stroke="var(--pool)" stroke-width="4" fill="none" stroke-linecap="round"
+                  stroke-dasharray="176" stroke-dashoffset="45"/>
+        </svg>
+        <div class="num-inside">74%</div>
+      </div>
+      <div class="circle-chart">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" stroke="var(--ceramic-deep)" stroke-width="4" fill="none"/>
+          <circle cx="32" cy="32" r="28" stroke="var(--brick)" stroke-width="4" fill="none" stroke-linecap="round"
+                  stroke-dasharray="176" stroke-dashoffset="90"/>
+        </svg>
+        <div class="num-inside">49%</div>
+      </div>
+      <div class="circle-chart">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" stroke="var(--ceramic-deep)" stroke-width="4" fill="none"/>
+          <circle cx="32" cy="32" r="28" stroke="var(--yuzu-deep)" stroke-width="4" fill="none" stroke-linecap="round"
+                  stroke-dasharray="176" stroke-dashoffset="20"/>
+        </svg>
+        <div class="num-inside">88%</div>
+      </div>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); letter-spacing: 0.05em;" data-i18n="circleLabel">anéis de progresso · 3 variantes</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CTA FINAL ═══════════ -->
+<section class="final-cta">
+  <h2 class="final-title" data-i18n="fTitle">Sete dias, <em>grátis</em>.<br>Depois, só se <em>quiser</em>.</h2>
+  <p class="final-sub" data-i18n="fSub">Sem renovação automática. Sem notificações de culpa. Você volta quando o corpo pedir.</p>
+  <div style="display: flex; gap: var(--s-3); flex-wrap: wrap;">
+    <a href="#" class="btn filled-pool" data-i18n="fCta1">Baixar para iOS
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+    <a href="#" class="btn" style="background: var(--ceramic); color: var(--ink); border-color: var(--ceramic);" data-i18n="fCta2">Baixar para Android
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+    <a href="#" class="btn ghost" style="color: var(--ceramic); border-color: var(--ceramic);" data-i18n="fCta3">Continuar no navegador</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div class="footer-cols">
+    <div>
+      <a href="#" class="brand">
+        <svg class="brand-mark" viewBox="0 0 36 36" fill="none">
+          <path d="M4 18 Q 10 12 16 18 T 28 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <path d="M6 24 Q 12 18 18 24 T 30 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.5"/>
+          <path d="M6 12 Q 12 6 18 12 T 30 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.75"/>
+          <circle cx="18" cy="18" r="3" fill="var(--brick)"/>
+        </svg>
+        <div class="brand-text">Corrente</div>
+      </a>
+      <p class="footer-brand-text" data-i18n="fAbout">Um pequeno estúdio de <em>design & prática</em> em São Paulo. Fazemos ferramentas simples para corpos complexos.</p>
+    </div>
+    <div>
+      <h5 data-i18n="fcPr">Produto</h5>
+      <ul>
+        <li><a href="#" data-i18n="fp1">Baixar</a></li>
+        <li><a href="#" data-i18n="fp2">Preços</a></li>
+        <li><a href="#" data-i18n="fp3">Novidades</a></li>
+        <li><a href="#" data-i18n="fp4">Para empresas</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="fcDo">Estúdio</h5>
+      <ul>
+        <li><a href="#" data-i18n="fs1">Manifesto</a></li>
+        <li><a href="#" data-i18n="fs2">Carta mensal</a></li>
+        <li><a href="#" data-i18n="fs3">Professores</a></li>
+        <li><a href="#" data-i18n="fs4">Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="fcSup">Suporte</h5>
+      <ul>
+        <li><a href="#" data-i18n="fsp1">Central de ajuda</a></li>
+        <li><a href="#" data-i18n="fsp2">Comunidade</a></li>
+        <li><a href="#" data-i18n="fsp3">Status</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="fcLeg">Legal</h5>
+      <ul>
+        <li><a href="#" data-i18n="fl1">Privacidade</a></li>
+        <li><a href="#" data-i18n="fl2">Termos</a></li>
+        <li><a href="#" data-i18n="fl3">Segurança</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-foot">
+    <span>CORRENTE · EST. MMXXVI · SÃO PAULO, BRASIL</span>
+    <span data-i18n="fFoot">— respire fundo, tudo passa —</span>
+  </div>
+</footer>
+
+<script>
+  const root = document.documentElement;
+
+  // ═══════════ THEME TOGGLE ═══════════
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'night' ? 'day' : 'night';
+  });
+
+  // ═══════════ BREATHING PHASE TEXT ═══════════
+  const phaseEl = document.getElementById('breathPhase');
+  const countEl = document.getElementById('breathCount');
+
+  // ciclo de 19s: 4s inspire, 7s segure, 8s solte
+  let startTime = Date.now();
+  let currentLang = 'pt';
+
+  function updateBreath() {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const cyclePos = elapsed % 19;
+
+    const labels = currentLang === 'en'
+      ? { in: 'breathe in', hold: 'hold', out: 'breathe out' }
+      : { in: 'inspire', hold: 'segure', out: 'solte' };
+
+    if (cyclePos < 4) {
+      phaseEl.textContent = labels.in;
+      countEl.textContent = `${Math.ceil(cyclePos)} / 4`;
+    } else if (cyclePos < 11) {
+      phaseEl.textContent = labels.hold;
+      countEl.textContent = `${Math.ceil(cyclePos - 4)} / 7`;
+    } else {
+      phaseEl.textContent = labels.out;
+      countEl.textContent = `${Math.ceil(cyclePos - 11)} / 8`;
+    }
+    requestAnimationFrame(updateBreath);
+  }
+  updateBreath();
+
+  // ═══════════ TOGGLE SWITCH ═══════════
+  document.getElementById('toggle1').addEventListener('click', (e) => {
+    e.currentTarget.classList.toggle('on');
+  });
+
+  // ═══════════ LOCALE ═══════════
+  const i18n = {
+    pt: {
+      'cta': 'Abrir o app',
+      'live': 'TRANSMITINDO · 08:14 · SÃO PAULO',
+      'ver': 'v0.9 BETA · EDIÇÃO DE OUTONO',
+      'mmx': '★ MMXXVI',
+      'hCounter': 'PRÁTICAS HOJE · 2 COMPLETAS · 18 MIN RESTANTES',
+      'hero': 'Respire,<br><em>nade,</em><br>pertença.',
+      'lede': 'Corrente é uma prática diária de <em>respiração, água e atenção</em>. Dez minutos por manhã, trinta por dia. Um corpo que lembra de si mesmo.',
+      'cta1': 'Começar 7 dias grátis',
+      'cta2': 'Ver uma prática',
+      'bpLabel': '★ BOX BREATHING · 4-7-8',
+      'bpBadge': 'AO VIVO',
+      'bpInspire': 'inspire',
+      'bpIn': 'inspire', 'bpHold': 'segure', 'bpOut': 'solte',
+      's1': 'PRATICANTES ATIVOS', 's2': 'APP STORE · 8.2K RESENHAS',
+      's3': 'MÉDIA DIÁRIA', 's4': 'RETORNAM NO 30º DIA',
+      'pracTitle': 'Sete <em>práticas</em>,<br>um só ritmo.',
+      'pracAside': '7 MÓDULOS<br>42 FAIXAS<br>ATUALIZADAS',
+      'p1num': '№ 01 · RESPIRAÇÃO', 'p1t': 'Box breathing <em>diário</em>.',
+      'p1b': 'Quatro-sete-oito segundos, repetidos com um círculo que respira junto. Três minutos bastam para um sistema nervoso pedir desculpas.',
+      'p2num': '№ 02 · MOVIMENTO', 'p2t': 'Natação para <em>mentes terrestres</em>.',
+      'p2b': 'Sequências curtas de alongamento aquático, flutuação guiada, e desaceleração pós-treino. Adaptado para piscina, mar, rio.',
+      'p3num': '№ 03 · ATENÇÃO', 'p3t': 'Escaneamento <em>corporal</em>.',
+      'p3b': 'Do topo da cabeça aos pés, parte por parte. Acorda o que dormiu, relaxa o que apertou.',
+      'p4num': '№ 04 · TERMO', 'p4t': 'Banhos <em>alternados</em>.',
+      'p4b': 'Temperatura como prática: frio, morno, frio. Protocolo gentil para adaptação progressiva.',
+      'p5num': '№ 05 · NOITE', 'p5t': 'Prática <em>noturna</em>.',
+      'p5b': 'Respiração lenta e meditação guiada para dormir antes da meia-noite. Sem voz assustada.',
+      'p6num': '№ 06 · COMUNIDADE', 'p6t': 'Sessões <em>em grupo</em>.',
+      'p6b': 'Prática guiada ao vivo com até 12 pessoas. Câmeras opcionais, vozes bem-vindas. Toda terça às 19h.',
+      'p7num': '№ 07 · REGISTRO', 'p7t': 'Seu <em>ritmo</em>, mapeado.',
+      'p7b': 'Dados que importam: constância, humor, qualidade do sono. O resto é ruído.',
+      'appTitle': 'O app, <em>em exercício</em>.',
+      'appAside': 'iOS · ANDROID<br>WEB · WATCH',
+      'sHoje': 'Hoje · quinta',
+      's1': 'Respiração', 's2': 'Movimento', 's3': 'Atenção', 's4': 'Noite',
+      'sCol': 'Coleções',
+      'c1': 'Para iniciantes', 'c2': 'Pós-treino', 'c3': 'Antes de dormir',
+      'canvasSub': '★ PRÁTICA DE RESPIRAÇÃO · 04:00',
+      'canvasTitle': 'Manhã <em>lenta</em>, coração aberto',
+      'week': 'ESTA SEMANA · MINUTOS DE PRÁTICA',
+      'd1': 'SEG', 'd2': 'TER', 'd3': 'QUA', 'd4': 'QUI', 'd5': 'SEX', 'd6': 'SÁB',
+      'now': 'agora',
+      'sWeek': 'Resumo da semana', 'totalMin': 'TOTAL · DE 3H SEMANAIS',
+      'sStats': 'Métricas',
+      'm1': 'Sequência', 'm2': 'FC repouso', 'm3': 'Sono profundo',
+      'm4': 'Humor', 'm5': 'Hidratação', 'mood': 'sereno',
+      'typeTitle': 'Três <em>letras</em>,<br>uma voz só.',
+      'typeAside': 'SANS · SERIF<br>MONO',
+      'tyB': 'A sans-serif variável da Rasmus Andersson com a largura reduzida — otimizada para densidade vertical e hierarquia clara. Com <em>itálicos ocasionais</em> em Instrument Serif para calor humano.',
+      'tyD': '"A água ensina o que a terra não consegue — que a forma pode mudar sem perder o que se é."',
+      'paletteTitle': 'Seis <em>cores</em>,<br>seis estados de corpo.',
+      'paletteAside': 'ACESSIBILIDADE<br>AAA',
+      'r1': 'PRIMÁRIA · ÁGUA', 'r2': 'ACENTO · PELE', 'r3': 'DESTAQUE · SOL',
+      'r4': 'SECUNDÁRIA · FOLHA', 'r5': 'TEXTO · NOITE', 'r6': 'BASE · LUZ',
+      'compT': 'COMPONENTES · AMOSTRAS',
+      'bPrim': 'Começar prática', 'bPool': 'Azul · pool', 'bGhost': 'Fantasma',
+      'chActive': '● ativo', 'chNew': '★ novo', 'chFire': '● em sequência',
+      'ph1': 'Buscar uma prática…',
+      'togLabel': 'lembretes diários · ativado',
+      'circleLabel': 'anéis de progresso · 3 variantes',
+      'fTitle': 'Sete dias, <em>grátis</em>.<br>Depois, só se <em>quiser</em>.',
+      'fSub': 'Sem renovação automática. Sem notificações de culpa. Você volta quando o corpo pedir.',
+      'fCta1': 'Baixar para iOS', 'fCta2': 'Baixar para Android', 'fCta3': 'Continuar no navegador',
+      'fAbout': 'Um pequeno estúdio de <em>design & prática</em> em São Paulo. Fazemos ferramentas simples para corpos complexos.',
+      'fcPr': 'Produto', 'fp1': 'Baixar', 'fp2': 'Preços', 'fp3': 'Novidades', 'fp4': 'Para empresas',
+      'fcDo': 'Estúdio', 'fs1': 'Manifesto', 'fs2': 'Carta mensal', 'fs3': 'Professores', 'fs4': 'Contato',
+      'fcSup': 'Suporte', 'fsp1': 'Central de ajuda', 'fsp2': 'Comunidade', 'fsp3': 'Status',
+      'fcLeg': 'Legal', 'fl1': 'Privacidade', 'fl2': 'Termos', 'fl3': 'Segurança',
+      'fFoot': '— respire fundo, tudo passa —'
+    },
+    en: {
+      'cta': 'Open the app',
+      'live': 'BROADCASTING · 08:14 · SÃO PAULO',
+      'ver': 'v0.9 BETA · AUTUMN EDITION',
+      'mmx': '★ MMXXVI',
+      'hCounter': 'PRACTICES TODAY · 2 DONE · 18 MIN LEFT',
+      'hero': 'Breathe,<br><em>swim,</em><br>belong.',
+      'lede': 'Corrente is a daily practice of <em>breath, water, and attention</em>. Ten minutes each morning, thirty through the day. A body that remembers itself.',
+      'cta1': 'Start 7 days free',
+      'cta2': 'See a practice',
+      'bpLabel': '★ BOX BREATHING · 4-7-8',
+      'bpBadge': 'LIVE',
+      'bpInspire': 'breathe in',
+      'bpIn': 'breathe in', 'bpHold': 'hold', 'bpOut': 'breathe out',
+      's1': 'ACTIVE PRACTITIONERS', 's2': 'APP STORE · 8.2K REVIEWS',
+      's3': 'DAILY AVERAGE', 's4': 'RETURN ON DAY 30',
+      'pracTitle': 'Seven <em>practices</em>,<br>one rhythm.',
+      'pracAside': '7 MODULES<br>42 TRACKS<br>UPDATED',
+      'p1num': '№ 01 · BREATH', 'p1t': 'Daily <em>box breathing</em>.',
+      'p1b': 'Four-seven-eight seconds, paced by a circle that breathes with you. Three minutes is enough for a nervous system to apologize.',
+      'p2num': '№ 02 · MOVEMENT', 'p2t': 'Swimming for <em>terrestrial minds</em>.',
+      'p2b': 'Short sequences of aquatic stretching, guided floating, and post-workout slowdown. Adapted for pool, sea, river.',
+      'p3num': '№ 03 · ATTENTION', 'p3t': '<em>Body</em> scanning.',
+      'p3b': 'From the top of the head to the feet, piece by piece. Wakes what slept, loosens what tightened.',
+      'p4num': '№ 04 · THERMAL', 'p4t': 'Alternating <em>baths</em>.',
+      'p4b': 'Temperature as practice: cold, warm, cold. Gentle protocol for progressive adaptation.',
+      'p5num': '№ 05 · NIGHT', 'p5t': '<em>Nighttime</em> practice.',
+      'p5b': 'Slow breathing and guided meditation for sleeping before midnight. No startled voice.',
+      'p6num': '№ 06 · COMMUNITY', 'p6t': '<em>Group</em> sessions.',
+      'p6b': 'Live guided practice with up to 12 people. Cameras optional, voices welcome. Every Tuesday at 7pm.',
+      'p7num': '№ 07 · LOG', 'p7t': 'Your <em>rhythm</em>, mapped.',
+      'p7b': 'Data that matters: consistency, mood, sleep quality. The rest is noise.',
+      'appTitle': 'The app, <em>in practice</em>.',
+      'appAside': 'iOS · ANDROID<br>WEB · WATCH',
+      'sHoje': 'Today · Thursday',
+      's1': 'Breath', 's2': 'Movement', 's3': 'Attention', 's4': 'Night',
+      'sCol': 'Collections',
+      'c1': 'For beginners', 'c2': 'Post-workout', 'c3': 'Before bed',
+      'canvasSub': '★ BREATHING PRACTICE · 04:00',
+      'canvasTitle': '<em>Slow</em> morning, open heart',
+      'week': 'THIS WEEK · PRACTICE MINUTES',
+      'd1': 'MON', 'd2': 'TUE', 'd3': 'WED', 'd4': 'THU', 'd5': 'FRI', 'd6': 'SAT',
+      'now': 'now',
+      'sWeek': 'Weekly summary', 'totalMin': 'TOTAL · OF 3H WEEKLY',
+      'sStats': 'Metrics',
+      'm1': 'Streak', 'm2': 'Resting HR', 'm3': 'Deep sleep',
+      'm4': 'Mood', 'm5': 'Hydration', 'mood': 'serene',
+      'typeTitle': 'Three <em>letters</em>,<br>one voice.',
+      'typeAside': 'SANS · SERIF<br>MONO',
+      'tyB': 'The variable sans-serif by Rasmus Andersson with the tighter width — optimized for vertical density and clear hierarchy. With <em>occasional italics</em> in Instrument Serif for human warmth.',
+      'tyD': '"Water teaches what land cannot — that form can change without losing what one is."',
+      'paletteTitle': 'Six <em>colors</em>,<br>six states of body.',
+      'paletteAside': 'AAA<br>ACCESSIBILITY',
+      'r1': 'PRIMARY · WATER', 'r2': 'ACCENT · SKIN', 'r3': 'HIGHLIGHT · SUN',
+      'r4': 'SECONDARY · LEAF', 'r5': 'TEXT · NIGHT', 'r6': 'BASE · LIGHT',
+      'compT': 'COMPONENTS · SAMPLES',
+      'bPrim': 'Start practice', 'bPool': 'Blue · pool', 'bGhost': 'Ghost',
+      'chActive': '● active', 'chNew': '★ new', 'chFire': '● on streak',
+      'ph1': 'Search a practice…',
+      'togLabel': 'daily reminders · on',
+      'circleLabel': 'progress rings · 3 variants',
+      'fTitle': 'Seven days, <em>free</em>.<br>Then, only if you <em>want</em>.',
+      'fSub': 'No auto-renewal. No guilt notifications. You come back when the body asks.',
+      'fCta1': 'Download for iOS', 'fCta2': 'Download for Android', 'fCta3': 'Continue in browser',
+      'fAbout': 'A small studio of <em>design & practice</em> in São Paulo. We make simple tools for complex bodies.',
+      'fcPr': 'Product', 'fp1': 'Download', 'fp2': 'Pricing', 'fp3': 'Changelog', 'fp4': 'For teams',
+      'fcDo': 'Studio', 'fs1': 'Manifesto', 'fs2': 'Monthly letter', 'fs3': 'Teachers', 'fs4': 'Contact',
+      'fcSup': 'Support', 'fsp1': 'Help center', 'fsp2': 'Community', 'fsp3': 'Status',
+      'fcLeg': 'Legal', 'fl1': 'Privacy', 'fl2': 'Terms', 'fl3': 'Security',
+      'fFoot': '— breathe deep, this too passes —'
+    }
+  };
+
+  const ptBtn = document.getElementById('loc-pt');
+  const enBtn = document.getElementById('loc-en');
+  function applyLocale(lang) {
+    currentLang = lang;
+    root.lang = lang === 'en' ? 'en' : 'pt-BR';
+    ptBtn.classList.toggle('active', lang === 'pt');
+    enBtn.classList.toggle('active', lang === 'en');
+    const dict = i18n[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.dataset.i18n;
+      if (dict[k] !== undefined) el.innerHTML = dict[k];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const k = el.dataset.i18nPh;
+      if (dict[k] !== undefined) el.placeholder = dict[k];
+    });
+  }
+  ptBtn.addEventListener('click', () => applyLocale('pt'));
+  enBtn.addEventListener('click', () => applyLocale('en'));
+</script>
+</body>
+</html>

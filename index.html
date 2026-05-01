@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>República — um jogo de cultivo paciente</title>
+
+    <!-- Theme color matches the paper backgrounds in App.css so the
+         browser chrome (mobile address bar, etc.) blends in. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f7f1e3" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121110" />
+
+    <!-- Theme bootstrap — runs before React mounts and before the main
+         stylesheet loads. Prevents the flash of wrong theme (FOWT) on
+         refresh by setting data-theme + the body's background-color
+         based on the saved preference. -->
+    <style>
+      :root { background-color: #f7f1e3; }
+      :root[data-theme='dark'] { background-color: #121110; }
+    </style>
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('republica.theme');
+          var mode = saved === 'light' || saved === 'dark' ? saved : 'light';
+          document.documentElement.setAttribute('data-theme', mode);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

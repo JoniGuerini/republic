@@ -1,0 +1,2157 @@
+/* ═══════════════════════════════════════════════════════════
+   REPÚBLICA · v0.1
+   Um jogo idle inspirado em Adventure Communist
+   Fundindo Lumen (editorial) + Jardim (botânico) + Corrente (modernista)
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Paleta base — pergaminho Lumen, leve e claro */
+  --paper: #f7f1e3;
+  --paper-2: #efe7d3;
+  --paper-3: #e3d8bf;
+  --vellum: #fcf8ec;
+
+  --ink: #2a2317;
+  --ink-soft: #4a3f2a;
+  --ink-faded: #7a6b4d;
+
+  /* Acentos das 3 identidades */
+  --moss: #556b2f;
+  --moss-deep: #3a4a20;
+  --pool: #1e5fb3;
+  --pool-deep: #164690;
+  --pool-light: #9cc4ed;
+  --terracotta: #b85842;
+  --terracotta-d: #8a3f2e;
+
+  --gold: #b8954a;
+  --bordeaux: #722d2d;
+
+  --line: #2a2317;
+  --line-soft: #8a7a5d;
+  --line-dashed: rgba(138, 122, 93, 0.5);
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Lora', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --card-shadow: none;
+
+  /* Card surfaces — distintos do fundo (vellum) para destacar geradores */
+  --card-bg: #fffefb;
+  --card-border: #6b5d3e;
+  --card-shadow-card: 0 1px 0 rgba(42, 35, 23, 0.04), 0 4px 14px -6px rgba(42, 35, 23, 0.18);
+
+  /* Background dot grid — tinta esmaecida sobre pergaminho */
+  --bg-dot: rgba(42, 35, 23, 0.18);
+}
+
+/* ── NOITE ── (paleta inspirada no Atelier design system) */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --paper: #121110;
+  --paper-2: #0b0a09;
+  --paper-3: #1a1917;
+  --vellum: #1a1917;
+
+  --ink: #ede8dc;
+  --ink-soft: #b8b1a2;
+  --ink-faded: #75706a;
+
+  --moss: #7fb58e;
+  --moss-deep: #a0cfa8;
+  --pool: #8fafd5;
+  --pool-deep: #b3c8e3;
+  --pool-light: #2a3a52;
+  --terracotta: #e5785e;
+  --terracotta-d: #f5a88f;
+
+  --gold: #d5b86c;
+  --bordeaux: #e5785e;
+
+  --line: #ede8dc;
+  --line-soft: #33302b;
+  --line-dashed: rgba(237, 232, 220, 0.18);
+
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+
+  /* Card surfaces — bg-panel do Atelier, bem destacado do bg principal */
+  --card-bg: #1a1917;
+  --card-border: #33302b;
+  --card-shadow-card: 0 6px 16px rgba(0, 0, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.4);
+
+  /* Background dot grid — pontos quase imperceptíveis no escuro */
+  --bg-dot: rgba(237, 232, 220, 0.05);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image: radial-gradient(circle at 1px 1px, var(--bg-dot) 1px, transparent 0);
+  background-size: 24px 24px;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1), color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════ LAYOUT ═══════════════ */
+
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ═══════════════ PAGES ═══════════════
+   Each top-level page lives in the middle row of `.app` (1fr). Because
+   that row has a definite max height, pages can themselves be grids/flex
+   containers with their own internal scroll regions (see .page-trilha). */
+
+.page {
+  min-height: 0;
+}
+
+.page-trilha {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  min-height: 0;
+}
+
+.page-upgrades {
+  /* Vertical scroll, content centered on the cross axis. The scrollbar
+     stays invisible — same treatment as the trilha list — so the page
+     reads as one continuous editorial fold. */
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.page-upgrades::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ─────────── Compêndio (static documentation page) ───────────
+   Each section is a self-contained editorial card (paper-white surface,
+   soft border, light shadow). Inside a card there are NO nested cards —
+   only dashed dividers and indentation — so the page reads as a series of
+   well-defined chapters instead of loose blocks floating on the desk. */
+.page-compendio {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.page-compendio::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.compendio-content {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 8px 4px 32px;
+  display: grid;
+  gap: 20px;
+}
+
+/* ── Intro masthead (full-bleed card, centered) ── */
+.compendio-intro {
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  padding: 32px 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--card-shadow-card);
+  position: relative;
+}
+.compendio-intro::before,
+.compendio-intro::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  height: 1px;
+  border-top: 1px dashed var(--line-soft);
+  opacity: 0.5;
+}
+.compendio-intro::before {
+  top: 12px;
+}
+.compendio-intro::after {
+  bottom: 12px;
+}
+.compendio-intro-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.compendio-intro-eyebrow span:first-child,
+.compendio-intro-eyebrow span:last-child {
+  color: var(--terracotta);
+}
+.compendio-intro-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 36px;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 60;
+}
+.compendio-intro-lede {
+  margin: 0 auto;
+  max-width: 580px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ── Section card ──
+   Each section gets its own paper card. Padding wraps the header AND the
+   body so the whole chapter feels grounded. */
+.compendio-section {
+  display: grid;
+  gap: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--card-shadow-card);
+  padding: 22px 26px 26px;
+}
+.compendio-section-header {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.compendio-section-bullet {
+  font-family: var(--font-mono);
+  color: var(--terracotta);
+  font-size: 14px;
+  line-height: 1;
+}
+.compendio-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 70;
+  letter-spacing: -0.01em;
+}
+.compendio-section-sub {
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+/* ── Prose ── */
+.compendio-prose {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.compendio-prose strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.compendio-prose em {
+  font-style: italic;
+  color: var(--ink);
+}
+/* Closing/aside paragraph at the end of a section. Kept understated —
+   left rule + tinted background — but stripped of any "card" feel since
+   it now lives inside a card already. */
+.compendio-note {
+  font-size: 13px;
+  color: var(--ink-faded);
+  border-left: 2px solid var(--terracotta);
+  padding: 6px 12px 6px 14px;
+  background: color-mix(in srgb, var(--terracotta) 4%, transparent);
+}
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* ── Tables (no outer chrome — inherit the section card surface).
+   IMPORTANT: keep the wrapper flush with the section padding (no negative
+   margin) so the thead's bottom border lines up perfectly with the dashed
+   divider beneath the section header. */
+.compendio-table-wrap {
+  overflow-x: auto;
+}
+.compendio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.compendio-table th,
+.compendio-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px dashed var(--line-soft);
+  vertical-align: middle;
+}
+.compendio-table th:first-child,
+.compendio-table td:first-child {
+  padding-left: 4px;
+}
+.compendio-table th:last-child,
+.compendio-table td:last-child {
+  padding-right: 4px;
+}
+.compendio-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.compendio-table thead th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 500;
+  color: var(--ink-faded);
+  border-bottom: 1px solid var(--line-soft);
+  padding-top: 6px;
+  padding-bottom: 8px;
+  background: transparent;
+}
+.compendio-table tbody tr:hover {
+  background: color-mix(in srgb, var(--paper-2) 35%, transparent);
+}
+.compendio-table .col-tier {
+  width: 56px;
+  text-align: center;
+}
+.compendio-table .col-cost,
+.compendio-table .col-rate {
+  text-align: right;
+  white-space: nowrap;
+}
+.compendio-tier-roman {
+  display: inline-block;
+  min-width: 30px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--terracotta-d);
+  letter-spacing: 0.04em;
+}
+/* The "Gerador" cell holds icon + (name/species). Use an inline-flex on a
+   wrapper INSIDE the cell, not on the <td> itself — flex on a td breaks
+   vertical-align middle and shifts the column off the table baseline. */
+.compendio-gen-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.compendio-gen-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-soft);
+  background: var(--vellum);
+  flex-shrink: 0;
+  color: var(--terracotta-d);
+}
+.compendio-gen-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.compendio-gen-text {
+  display: grid;
+  gap: 2px;
+}
+.compendio-gen-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 70;
+}
+.compendio-gen-species {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--ink-faded);
+}
+
+.compendio-table-numbers .mono {
+  font-size: 12px;
+}
+
+/* ── Cards (Aprimoramentos ×2/÷2 summary).
+   Now visually integrated into the parent section: vellum surface + dashed
+   border, no shadow. They're "panels", not "cards". */
+.compendio-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.compendio-card {
+  border: 1px dashed var(--line-soft);
+  background: color-mix(in srgb, var(--vellum) 60%, transparent);
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+.compendio-card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--terracotta);
+}
+.compendio-card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 70;
+}
+.compendio-card-body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.compendio-card-body strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ── Formulas (subtle inset, kept understated) ── */
+.compendio-formula {
+  display: grid;
+  gap: 8px;
+  border: 1px dashed var(--line-soft);
+  background: color-mix(in srgb, var(--vellum) 60%, transparent);
+  padding: 14px 16px;
+}
+.compendio-formula-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: baseline;
+  gap: 12px;
+}
+.compendio-formula-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-faded);
+}
+.compendio-formula-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.compendio-formula-code sup {
+  font-size: 0.7em;
+  color: var(--terracotta-d);
+}
+
+/* ── Production chain (Recursos section) ── */
+.compendio-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px dashed var(--line-soft);
+  background: color-mix(in srgb, var(--vellum) 60%, transparent);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-variation-settings: 'SOFT' 80;
+}
+.compendio-chain-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.compendio-chain-arrow {
+  color: var(--terracotta);
+  font-family: var(--font-mono);
+  font-style: normal;
+}
+.compendio-chain-resource em {
+  color: var(--terracotta-d);
+}
+
+/* ── Suffixes list (no double frame — inset only) ── */
+.compendio-suffixes {
+  display: grid;
+  gap: 10px;
+  border: 1px dashed var(--line-soft);
+  background: color-mix(in srgb, var(--vellum) 60%, transparent);
+  padding: 14px 16px;
+}
+.compendio-suffixes-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-faded);
+}
+.compendio-suffixes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px 14px;
+}
+.compendio-suffix {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.compendio-suffix-sym {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--terracotta-d);
+  font-weight: 500;
+  min-width: 24px;
+}
+.compendio-suffix-full {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* ── Shortcuts list ── */
+.compendio-shortcuts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+.compendio-shortcut {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: baseline;
+  gap: 14px;
+  padding: 12px 4px;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.compendio-shortcut:first-child {
+  padding-top: 4px;
+}
+.compendio-shortcut:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+.compendio-shortcut-key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--terracotta-d);
+  align-self: start;
+  padding-top: 2px;
+}
+.compendio-shortcut-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.compendio-shortcut-desc strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.compendio-shortcut-desc em {
+  font-style: italic;
+  color: var(--ink);
+}
+
+/* ── Bulleted list (Persistência) ── */
+.compendio-bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.compendio-bullets li {
+  position: relative;
+  padding-left: 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.compendio-bullets li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  top: -2px;
+  color: var(--terracotta);
+  font-family: var(--font-mono);
+  font-size: 18px;
+  line-height: 1;
+}
+.compendio-bullets li strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ── Mobile (stack everything, slim padding) ── */
+@media (max-width: 720px) {
+  .compendio-content {
+    gap: 14px;
+  }
+  .compendio-intro {
+    padding: 24px 16px;
+  }
+  .compendio-intro-title {
+    font-size: 28px;
+  }
+  .compendio-section {
+    padding: 18px 16px 20px;
+  }
+  .compendio-cards {
+    grid-template-columns: 1fr;
+  }
+  .compendio-formula-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .compendio-shortcut {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .compendio-table th,
+  .compendio-table td {
+    padding: 10px 8px;
+  }
+  .compendio-table .col-name {
+    gap: 8px;
+  }
+  .compendio-gen-icon {
+    width: 28px;
+    height: 28px;
+  }
+  .compendio-gen-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.upgrades-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4px 4px 24px;
+  display: grid;
+  gap: 32px;
+}
+
+/* ── Section header (shared by Globais and Por gerador) ── */
+.upgrades-section {
+  display: grid;
+  gap: 16px;
+}
+.upgrades-section-header {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.upgrades-section-bullet {
+  font-family: var(--font-mono);
+  color: var(--terracotta);
+  font-size: 14px;
+  line-height: 1;
+}
+.upgrades-section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 70;
+  letter-spacing: -0.01em;
+}
+.upgrades-section-sub {
+  margin: 0;
+  justify-self: end;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+/* ── Grid layouts ── */
+.upgrades-grid {
+  display: grid;
+  gap: 14px;
+}
+.upgrades-grid-global {
+  /* Two large cards side by side; collapse to single column on narrow
+     screens (handled in the responsive block at the bottom of this file). */
+  grid-template-columns: 1fr 1fr;
+}
+.upgrades-grid-individual {
+  grid-template-columns: 1fr;
+}
+.upgrades-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) 1fr;
+  gap: 14px;
+  align-items: stretch;
+}
+.upgrades-row-tag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+  padding: 14px 18px;
+  background: color-mix(in srgb, var(--card-bg) 60%, transparent);
+  border: 1px dashed var(--line-soft);
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+  user-select: none;
+}
+.upgrades-row-tag-tier {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 4px;
+}
+.upgrades-row-tag-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  font-variation-settings: 'SOFT' 60;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.upgrades-row-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Upgrade card (the actual purchasable unit) ── */
+.upgrade-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 12px;
+  padding: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 2px;
+  box-shadow: var(--card-shadow-card);
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+.upgrade-card.pulse {
+  /* Same gentle pulse as the generator cards on level-up. */
+  animation: upgradePulse 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes upgradePulse {
+  0% {
+    box-shadow: var(--card-shadow-card);
+  }
+  40% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--terracotta) 22%, transparent),
+      var(--card-shadow-card);
+  }
+  100% {
+    box-shadow: var(--card-shadow-card);
+  }
+}
+
+/* Globals get a doubled border + a subtle terracotta tint to feel "elevated". */
+.upgrade-card-global {
+  border: 1px solid var(--card-border);
+  outline: 1px solid var(--card-border);
+  outline-offset: 3px;
+  background: color-mix(in srgb, var(--card-bg) 92%, var(--terracotta) 8%);
+}
+.upgrade-card-global::before {
+  content: '✦ global';
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  padding: 2px 8px;
+  background: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--terracotta-d);
+}
+
+/* Unavailable = the targeted generator hasn't been bought yet. We hide
+   the buy controls and present the card as a "stamp" — same visual
+   language used for locked generator tiers, which keeps "wait for that
+   generator first" reading consistently across the game. */
+.upgrade-card-unavailable {
+  /* Center the 3 internal blocks vertically so the card reads "in waiting"
+     even when its sibling card is taller (active cards have a buy button). */
+  grid-template-rows: 1fr auto auto 1fr;
+  align-items: center;
+  justify-items: center;
+  background: color-mix(in srgb, var(--card-bg) 75%, transparent);
+  border-style: dashed;
+  border-color: var(--line-soft);
+  box-shadow: none;
+  padding: 18px 16px 16px;
+  text-align: center;
+  cursor: default;
+  color: var(--ink-soft);
+}
+.upgrade-card-unavailable .upgrade-unavailable-stamp {
+  grid-row: 2;
+}
+.upgrade-card-unavailable .upgrade-unavailable-identity {
+  grid-row: 3;
+  width: 100%;
+}
+.upgrade-card-unavailable .upgrade-unavailable-hint {
+  grid-row: 4;
+  align-self: end;
+  width: 100%;
+}
+.upgrade-card-unavailable.pulse {
+  /* No pulse animation on these (no level-up to celebrate) */
+  animation: none;
+}
+
+.upgrade-unavailable-stamp {
+  display: inline-flex;
+  align-self: center;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 2px;
+  margin: 0 auto;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+  border: 1px dashed var(--line-soft);
+  border-radius: 2px;
+  user-select: none;
+}
+.upgrade-unavailable-stamp-bullet {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.65;
+}
+.upgrade-unavailable-stamp-text {
+  font-weight: 500;
+}
+
+/* MAX variant: same skeleton as "indisponível" but tinted in terracotta to
+   communicate accomplishment ("você bateu o teto") instead of locked-out.
+   Background gets a subtle terracotta wash, border solid, ink stays bold. */
+.upgrade-unavailable-stamp.upgrade-unavailable-stamp-max {
+  color: var(--terracotta-d);
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--terracotta) 55%, transparent);
+  background: color-mix(in srgb, var(--terracotta) 8%, var(--card-bg));
+}
+.upgrade-unavailable-stamp.upgrade-unavailable-stamp-max .upgrade-unavailable-stamp-bullet {
+  opacity: 0.85;
+}
+/* Slightly less faded body for maxed cards — they're a positive state, not
+   a "you can't use this" state, so the typography stays a little more
+   confident than the inert variant. */
+.upgrade-card-maxed .upgrade-unavailable-name em,
+.upgrade-card-maxed .upgrade-unavailable-name {
+  color: var(--ink);
+}
+.upgrade-card-maxed .upgrade-unavailable-hint {
+  color: var(--ink-soft);
+  font-style: normal;
+}
+
+.upgrade-unavailable-identity {
+  margin-top: 4px;
+}
+.upgrade-unavailable-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.1;
+  color: var(--ink-soft);
+  font-variation-settings: 'SOFT' 60;
+  letter-spacing: -0.005em;
+}
+.upgrade-unavailable-name em {
+  color: var(--ink-soft);
+}
+.upgrade-unavailable-family {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+.upgrade-unavailable-hint {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line-soft);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-faded);
+}
+.upgrade-unavailable-hint strong {
+  color: var(--ink-soft);
+  font-weight: 500;
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.upgrade-top {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.upgrade-glyph {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--terracotta-d);
+}
+.upgrade-glyph svg {
+  width: 100%;
+  height: 100%;
+}
+.upgrade-glyph-global {
+  font-size: 22px;
+  line-height: 1;
+}
+.upgrade-identity {
+  min-width: 0;
+}
+.upgrade-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variation-settings: 'SOFT' 60;
+  letter-spacing: -0.005em;
+}
+.upgrade-name em {
+  color: var(--terracotta-d);
+}
+.upgrade-family {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.upgrade-level {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.upgrade-level-value {
+  font-size: 17px;
+  color: var(--ink);
+}
+.upgrade-level-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+.upgrade-effects {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px dashed var(--line-soft);
+  border-bottom: 1px dashed var(--line-soft);
+}
+.upgrade-effects::after {
+  /* Visual arrow between current and next effect. */
+  content: '→';
+  grid-column: 2;
+  grid-row: 1;
+  font-family: var(--font-mono);
+  color: var(--ink-faded);
+  font-size: 14px;
+  line-height: 1;
+  justify-self: center;
+  align-self: center;
+}
+.upgrade-effect {
+  display: grid;
+  gap: 2px;
+}
+.upgrade-effect:first-child {
+  grid-column: 1;
+}
+.upgrade-effect-next {
+  grid-column: 3;
+  text-align: right;
+}
+.upgrade-effect-next .stat-value {
+  color: var(--terracotta-d);
+}
+
+.upgrade-buy-btn {
+  width: 100%;
+}
+
+/* ═══════════════ HEADER ═══════════════ */
+
+header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: end;
+  padding-bottom: 16px;
+  border-bottom: 2px double var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'SOFT' 60;
+}
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faded);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.header-center {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faded);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.header-center strong {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--ink);
+  display: block;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 14px;
+  padding: 6px 14px;
+  background: var(--card-bg);
+  color: var(--ink);
+  border: 1px solid var(--line-soft);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--vellum);
+}
+.btn.reset {
+  font-size: 12px;
+  padding: 4px 10px;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--line-soft);
+  background: var(--card-bg);
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--ink);
+  color: var(--vellum);
+}
+.theme-toggle svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s;
+}
+.theme-toggle .theme-icon-sun {
+  transform: translate(-50%, -50%) rotate(0deg);
+  opacity: 1;
+}
+.theme-toggle .theme-icon-moon {
+  transform: translate(-50%, -50%) rotate(180deg) scale(0.4);
+  opacity: 0;
+}
+[data-theme='dark'] .theme-toggle .theme-icon-sun {
+  transform: translate(-50%, -50%) rotate(180deg) scale(0.4);
+  opacity: 0;
+}
+[data-theme='dark'] .theme-toggle .theme-icon-moon {
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  opacity: 1;
+}
+
+/* ═══════════════ BOARD ═══════════════ */
+
+.board-heads {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* Registers --fade-top/--fade-bottom as proper <length> custom props so
+   their values can be smoothly transitioned (CSS Houdini). Browsers that
+   don't support @property simply skip the registration; the fade still
+   works, it just snaps instead of fading. */
+@property --fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.board-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Soft fade on whichever edge has hidden content beyond it.
+     Stops are toggled by .fade-top / .fade-bottom (set from JS) so the
+     fade only appears when there's actually something to reveal. */
+  --fade-top: 0px;
+  --fade-bottom: 0px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--fade-top),
+    #000 calc(100% - var(--fade-bottom)),
+    transparent 100%
+  );
+  transition: --fade-top 0.18s ease, --fade-bottom 0.18s ease;
+  /* Hide the scrollbar visually — the edge fades already telegraph that
+     the list is scrollable, and rolling still works (wheel, trackpad,
+     keyboard, touch). Firefox + WebKit need separate hooks. */
+  scrollbar-width: none;
+}
+.board-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.board-scroll.fade-top {
+  --fade-top: 16px;
+}
+.board-scroll.fade-bottom {
+  --fade-bottom: 16px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  /* Breathing room so the first/last card aren't kissed by the mask fade. */
+  padding: 4px 2px;
+}
+
+.track-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Track head — unified card combining ornamental drop-cap, identity,
+   and live numerical state. Three columns, separated by dashed rules. */
+.track-head {
+  padding: 22px 24px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  position: relative;
+  box-shadow: var(--card-shadow-card);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 28px;
+  align-items: center;
+}
+.track-head::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px dashed var(--line-dashed);
+  pointer-events: none;
+}
+
+.track-head-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.track-head-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.track-head-identity {
+  border-left: 1px dashed var(--line-soft);
+  padding-left: 28px;
+}
+
+.track-head .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 6px;
+}
+.track-head h2 {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'SOFT' 80;
+}
+.track-head .motto {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+
+.track-head-stats {
+  border-left: 1px dashed var(--line-soft);
+  padding-left: 28px;
+  text-align: right;
+  min-width: 140px;
+}
+.track-head-stats .value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.track-head-stats .rate {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-faded);
+  margin-top: 6px;
+}
+.track-head-stats .rate strong {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.track-head.letters h2,
+.track-head.letters .track-head-stats .value {
+  color: var(--terracotta-d);
+}
+
+/* ═══════════════ GENERATOR ═══════════════ */
+
+.gen {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 14px;
+  position: relative;
+  transition: opacity 0.3s, background 0.6s, border-color 0.6s, box-shadow 0.6s;
+  box-shadow: var(--card-shadow-card);
+}
+
+/* Locked generator — editorial "in construction" card.
+   Same chrome as the active card (background, border, shadow) but the
+   content is replaced by an identity block and a progress bar showing
+   how many resources are still needed to unlock the tier. */
+.gen.gen-locked {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px dashed var(--line-soft);
+  box-shadow: var(--card-shadow-card);
+  padding: 28px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* "BLOQUEADO" stamp in the top-right corner — postal/editorial mark */
+.gen-locked-stamp {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 4px;
+  border: 1px solid var(--ink-faded);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+}
+.gen-locked-stamp-bullet {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.7;
+}
+.gen-locked-stamp-text {
+  font-weight: 500;
+}
+
+/* Identity block — icon, name in display italic, species in body italic */
+.gen-locked-identity {
+  text-align: center;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.gen-locked-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--ink-faded);
+  background: color-mix(in srgb, var(--vellum) 60%, transparent);
+  color: var(--ink-faded);
+  opacity: 0.85;
+}
+.gen-locked-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.gen-locked-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  font-variation-settings: 'SOFT' 80;
+}
+.gen-locked-species {
+  margin-top: 2px;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-faded);
+  letter-spacing: 0.01em;
+}
+
+/* Progress block — hint, bar, remaining counter */
+.gen-locked-progress {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.gen-locked-hint {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.gen-locked-hint strong {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--terracotta-d);
+  letter-spacing: 0.04em;
+}
+.gen-locked-bar {
+  width: 100%;
+  height: 3px;
+  background: color-mix(in srgb, var(--ink-faded) 18%, transparent);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+.gen-locked-bar-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--terracotta-d) 0%,
+    var(--terracotta) 100%
+  );
+  border-radius: 2px;
+  /* No CSS transition here: the parent updates width every animation frame
+     (60fps) so a transition would constantly chase a moving target and end
+     up looking frozen. Letting the width snap each frame produces a smooth,
+     legible progress instead. */
+}
+.gen-locked-remaining {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.gen-locked-remaining strong {
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-left: 2px;
+}
+
+.gen-top {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.gen-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-soft);
+  background: var(--vellum);
+}
+
+.gen-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.gen-name em {
+  font-style: italic;
+  font-variation-settings: 'SOFT' 80;
+}
+.gen-species {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--ink-faded);
+  margin-top: 2px;
+}
+
+.gen-count {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1;
+  text-align: right;
+}
+.gen-count-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ink-faded);
+  text-transform: uppercase;
+  text-align: right;
+  margin-top: 2px;
+}
+
+.gen-stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px dashed var(--line-dashed);
+  border-bottom: 1px dashed var(--line-dashed);
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.gen-stats > :last-child {
+  text-align: right;
+}
+.gen-stats .stat-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--ink-faded);
+  text-transform: uppercase;
+}
+.gen-stats .stat-value {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Buy button */
+.buy-btn {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--ink);
+  color: var(--vellum);
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 13px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  transition: all 0.2s;
+}
+.buy-btn:hover:not(:disabled) {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+}
+.buy-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: var(--ink-faded);
+  border-color: var(--ink-faded);
+}
+
+.track-body.letters .buy-btn:hover:not(:disabled) {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+}
+
+.buy-btn .buy-action {
+  font-style: italic;
+  letter-spacing: 0.01em;
+  text-align: left;
+}
+.buy-btn .buy-cost {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Tier indicator — only for active (unlocked) generators. Locked cards
+   carry their tier identity via the large roman numeral instead. */
+.gen:not(.gen-locked)[data-tier='1'] {
+  border-left: 3px solid var(--line);
+}
+.gen:not(.gen-locked)[data-tier='2'] {
+  border-left: 3px solid var(--line-soft);
+}
+.gen:not(.gen-locked)[data-tier='3'] {
+  border-left: 3px solid var(--gold);
+}
+.gen:not(.gen-locked)[data-tier='4'] {
+  border-left: 3px solid var(--bordeaux);
+}
+
+/* Pulse */
+@keyframes pulseGen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(184, 88, 66, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(184, 88, 66, 0);
+  }
+}
+.gen.pulse {
+  animation: pulseGen 0.6s ease-out;
+}
+
+/* ═══════════════ FOOTER NAVBAR ═══════════════
+   Top-level navigation between pages. Each item is a button with an italic
+   display label; the active one carries a thin terracotta underline (the
+   page's "you are here" mark). Inactive items lift to terracotta on hover
+   and focus. Card surface matches the rest of the editorial palette. */
+
+.footer {
+  padding: 8px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow-card);
+}
+
+.footer-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+}
+
+.footer-nav-item {
+  display: flex;
+}
+
+.footer-nav-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  font-variation-settings: 'SOFT' 70;
+  transition: color 0.18s ease;
+}
+.footer-nav-btn::after {
+  /* Hairline underline that grows from the center on hover and is held
+     fully extended for the active item. Mirrors the editorial accent. */
+  content: '';
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 6px;
+  height: 1px;
+  background: var(--terracotta);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer-nav-btn:hover,
+.footer-nav-btn:focus-visible {
+  color: var(--terracotta-d);
+  outline: none;
+}
+.footer-nav-btn:hover::after,
+.footer-nav-btn:focus-visible::after {
+  transform: scaleX(0.6);
+}
+.footer-nav-btn.is-active {
+  color: var(--terracotta-d);
+}
+.footer-nav-btn.is-active::after {
+  transform: scaleX(1);
+}
+
+.footer-nav-label {
+  display: inline-block;
+}
+
+/* ═══════════════ MILESTONES ═══════════════ */
+
+/* Editorial toast — uses the OPPOSITE theme's surface so the message
+   pops against the page (dark plate on light, light plate on dark).
+   No filled "coin" badge: the ✦ glyph stands on its own as a typographic
+   accent in the terracotta family, separated from the text by a thin
+   vertical hairline so it reads as a small editorial mark, not a UI button. */
+.milestone-toast {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-24px);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 14px 22px 13px;
+  /* Light mode default — inverted (warm dark plate, vellum text) */
+  background: #211e1a;
+  color: #ede4cd;
+  border: 1px solid rgba(237, 228, 205, 0.08);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 0 rgba(255, 248, 224, 0.04) inset,
+    0 12px 28px -8px rgba(15, 12, 6, 0.45),
+    0 4px 10px -4px rgba(15, 12, 6, 0.3);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  font-variation-settings: 'SOFT' 80;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s;
+  opacity: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+.milestone-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.milestone-toast::before {
+  content: '✦';
+  display: inline-block;
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1;
+  color: #d97a5e; /* terracotta-light, sits well on warm dark plate */
+  padding-right: 14px;
+  margin-right: 0;
+  border-right: 1px solid rgba(237, 228, 205, 0.14);
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  letter-spacing: 0.04em;
+}
+
+/* Dark mode — flip back to a warm vellum plate */
+[data-theme='dark'] .milestone-toast {
+  background: #f5efdf;
+  color: #2a2317;
+  border-color: rgba(42, 35, 23, 0.1);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 12px 28px -8px rgba(0, 0, 0, 0.55),
+    0 4px 10px -4px rgba(0, 0, 0, 0.4);
+}
+[data-theme='dark'] .milestone-toast::before {
+  color: #8a3f2e;
+  border-right-color: rgba(42, 35, 23, 0.18);
+}
+
+/* ═══════════════ CONFIRM DIALOG ═══════════════
+   Editorial confirmation modal: dimmed backdrop with a slightly-rotated
+   paper letter on top. The confirm button must be held to fire — its fill
+   bar sweeps left-to-right as the user holds, doubling as visual feedback. */
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: color-mix(in srgb, #1a1409 60%, transparent);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: confirm-backdrop-in 0.2s ease-out;
+}
+@keyframes confirm-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.confirm-letter {
+  position: relative;
+  background: var(--card-bg);
+  color: var(--ink);
+  border: 1px solid var(--line-soft);
+  padding: 32px 36px 28px;
+  width: min(460px, 100%);
+  box-shadow:
+    0 24px 60px -12px rgba(20, 16, 8, 0.45),
+    0 6px 16px -4px rgba(20, 16, 8, 0.25);
+  transform: rotate(-0.4deg);
+  animation: confirm-letter-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes confirm-letter-in {
+  from { opacity: 0; transform: rotate(-0.4deg) translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: rotate(-0.4deg) translateY(0) scale(1); }
+}
+
+/* Tiny corner bullets — typographic frame, like a printed handbill */
+.confirm-corner {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink-faded);
+  opacity: 0.6;
+  line-height: 1;
+}
+.confirm-corner.top-left { top: 8px; left: 10px; }
+.confirm-corner.top-right { top: 8px; right: 10px; }
+.confirm-corner.bottom-left { bottom: 8px; left: 10px; }
+.confirm-corner.bottom-right { bottom: 8px; right: 10px; }
+
+.confirm-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-bottom: 18px;
+}
+.confirm-letter.danger .confirm-eyebrow {
+  color: var(--bordeaux);
+}
+.confirm-eyebrow span:first-child,
+.confirm-eyebrow span:last-child {
+  opacity: 0.6;
+}
+
+.confirm-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  text-align: center;
+  font-variation-settings: 'SOFT' 80;
+  margin-bottom: 12px;
+}
+
+.confirm-message {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.confirm-message strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Wax-seal divider — a small star on a faint rule */
+.confirm-seal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 22px 0 24px;
+  position: relative;
+}
+.confirm-seal::before,
+.confirm-seal::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--line-soft) 50%,
+    transparent
+  );
+  opacity: 0.5;
+}
+.confirm-seal span {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--terracotta-d);
+  margin: 0 14px;
+  line-height: 1;
+}
+.confirm-letter.danger .confirm-seal span {
+  color: var(--bordeaux);
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 14px;
+  /* Align both columns to the top so Cancel matches the height of the
+     Confirm button only (not Confirm + hint stacked under it). */
+  align-items: start;
+}
+
+.confirm-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: 12px 16px;
+  border: 1px solid var(--line-soft);
+  background: var(--card-bg);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  user-select: none;
+}
+.confirm-btn:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.confirm-btn:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 2px;
+}
+
+/* Confirm button needs a relative container for the fill overlay + the hint */
+.confirm-confirm-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.confirm-btn-confirm {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-color: var(--ink-faded);
+  color: var(--ink);
+}
+.confirm-letter.danger .confirm-btn-confirm {
+  border-color: var(--bordeaux);
+  color: var(--bordeaux);
+}
+.confirm-btn-confirm:hover {
+  background: var(--paper-2);
+}
+.confirm-btn-confirm.is-holding {
+  /* Slight nudge while held — feels active */
+  transform: translateY(1px);
+}
+
+/* The fill bar sweeps from 0 → 100% width as the user holds.
+   No CSS transition on `width`: the hook updates it ~60×/s via rAF, and
+   any transition would constantly interrupt itself and produce visible
+   jitter. Same lesson learned with .gen-locked-bar-fill. */
+.confirm-btn-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--ink);
+  z-index: 0;
+}
+.confirm-letter.danger .confirm-btn-fill {
+  background: var(--bordeaux);
+}
+.confirm-btn-confirm.is-holding .confirm-btn-label {
+  color: var(--vellum);
+  position: relative;
+  z-index: 1;
+  transition: color 0.18s;
+}
+.confirm-btn-label {
+  position: relative;
+  z-index: 1;
+  transition: color 0.18s;
+}
+
+.confirm-hint {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--ink-faded);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* Mobile: stack buttons full-width */
+@media (max-width: 540px) {
+  .confirm-letter {
+    padding: 26px 22px 20px;
+    transform: rotate(-0.3deg);
+  }
+  .confirm-title { font-size: 24px; }
+  .confirm-actions {
+    grid-template-columns: 1fr;
+  }
+  .confirm-confirm-wrap { order: -1; }
+}
+
+/* FPS counter — small editorial tag in the same visual family as the
+   "BLOQUEADO" stamp on locked cards. Bullets flank a "fps · NN" label. */
+.fps-counter {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  background: color-mix(in srgb, var(--card-bg) 80%, transparent);
+  border: 1px solid var(--line-soft);
+  border-radius: 2px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  transition: background 0.6s, color 0.6s, border-color 0.6s;
+}
+.fps-counter-bullet {
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0.55;
+}
+.fps-counter-label {
+  font-weight: 500;
+}
+.fps-counter-value {
+  color: var(--ink-soft);
+  letter-spacing: 0.12em;
+  min-width: 1.6em;
+  text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .track-head {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 18px 18px;
+  }
+  .track-head-identity,
+  .track-head-stats {
+    border-left: none;
+    border-top: 1px dashed var(--line-soft);
+    padding-left: 0;
+    padding-top: 16px;
+    text-align: left;
+    min-width: 0;
+  }
+  .footer {
+    padding: 6px 8px;
+  }
+  .footer-nav-btn {
+    padding: 9px 16px 11px;
+    font-size: 16px;
+  }
+  .footer-nav-btn::after {
+    left: 16px;
+    right: 16px;
+  }
+  .upgrades-grid-global {
+    grid-template-columns: 1fr;
+  }
+  .upgrades-row {
+    grid-template-columns: 1fr;
+  }
+  .upgrades-row-cards {
+    grid-template-columns: 1fr;
+  }
+  .upgrades-row-tag {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 10px;
+    text-align: left;
+    border-right: 1px dashed var(--line-soft);
+    border-radius: 2px;
+    padding: 10px 14px;
+  }
+  .upgrades-row-tag-tier {
+    margin-bottom: 0;
+  }
+  .upgrades-section-header {
+    grid-template-columns: auto auto auto;
+    row-gap: 6px;
+  }
+  .upgrades-section-sub {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

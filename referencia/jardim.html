@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jardim — um caderno para o que se cultiva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=VT323&display=swap" rel="stylesheet">
+<style>
+  /* ═══════════════════════════════════════════════════
+     JARDIM · DESIGN SYSTEM v0.1
+     "um caderno para o que se cultiva"
+     ═══════════════════════════════════════════════════ */
+
+  :root {
+    /* ── Cores : LIGHT (default, pergaminho) ── */
+    --parchment:     #f0e8d3;   /* base pergaminho */
+    --parchment-2:   #e8dfc4;   /* sombra de pergaminho */
+    --parchment-3:   #ded2b0;   /* dobra de papel */
+    --vellum:        #faf4e2;   /* papel vegetal, mais claro */
+
+    --ink:           #2a2317;   /* tinta castanho-escura */
+    --ink-soft:      #4a3f2a;
+    --ink-faded:     #7a6b4d;   /* anotações antigas */
+
+    --moss:          #556b2f;   /* verde musgo */
+    --moss-deep:     #3a4a20;
+    --terracotta:    #b85842;   /* telha antiga */
+    --sepia:         #8b6f3d;
+    --gold-aged:     #b8954a;   /* ouro envelhecido */
+    --bordeaux:      #722d2d;
+
+    --line:          #2a2317;
+    --line-soft:     #8a7a5d;
+
+    /* ── Tipografia ── */
+    --font-display:  'DM Serif Display', Georgia, serif;
+    --font-body:     'Lora', Georgia, serif;
+    --font-type:     'VT323', 'Courier New', monospace;  /* máquina de escrever */
+
+    /* ── Espaçamento ── */
+    --s-1: 4px;  --s-2: 8px;   --s-3: 16px;  --s-4: 24px;
+    --s-5: 32px; --s-6: 48px;  --s-7: 64px;  --s-8: 96px;  --s-9: 144px;
+
+    /* ── Movimento ── */
+    --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bloom: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-theme="dark"] {
+    --parchment:     #1a1814;   /* noite no jardim */
+    --parchment-2:   #221f1a;
+    --parchment-3:   #2d2822;
+    --vellum:        #1f1b15;
+
+    --ink:           #e8dfc4;
+    --ink-soft:      #c4b68f;
+    --ink-faded:     #8a7a5d;
+
+    --moss:          #8ba55c;
+    --moss-deep:     #a8c47a;
+    --terracotta:    #d4806a;
+    --sepia:         #c9a46e;
+    --gold-aged:     #d4b168;
+    --bordeaux:      #c4584f;
+
+    --line:          #e8dfc4;
+    --line-soft:     #7a6b4d;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--parchment);
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--parchment);
+    min-height: 100vh;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.8s var(--ease-soft), color 0.8s var(--ease-soft);
+    overflow-x: hidden;
+  }
+
+  /* Textura de papel artesanal */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+  [data-theme="dark"] body::before { mix-blend-mode: screen; opacity: 0.05; }
+
+  /* Manchas de foxing (papel envelhecido) */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 800px 400px at 15% 20%, rgba(139, 111, 61, 0.08), transparent),
+      radial-gradient(ellipse 600px 300px at 85% 60%, rgba(184, 88, 66, 0.05), transparent),
+      radial-gradient(ellipse 700px 350px at 40% 90%, rgba(85, 107, 47, 0.06), transparent);
+  }
+  [data-theme="dark"] body::after { opacity: 0.4; }
+
+  /* ═══════════════════════════════════════════════════
+     TOPBAR — tira de chá, costurada à página
+     ═══════════════════════════════════════════════════ */
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--parchment);
+    border-bottom: 2px double var(--line);
+    padding: var(--s-3) var(--s-5);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--s-5);
+    transition: background 0.8s var(--ease-soft);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .brand-mark {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+
+  .topbar-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--s-5);
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .topbar-nav a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    padding: 2px 0;
+  }
+  .topbar-nav a::before {
+    content: "❦"; /* floreão botânico */
+    position: absolute;
+    left: 50%;
+    top: -16px;
+    transform: translateX(-50%) scale(0);
+    color: var(--terracotta);
+    font-size: 11px;
+    transition: transform 0.3s var(--ease-bloom);
+  }
+  .topbar-nav a:hover::before { transform: translateX(-50%) scale(1); }
+  .topbar-nav a:hover { color: var(--ink); }
+
+  .topbar-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  /* Locale — dois selos */
+  .locale {
+    display: inline-flex;
+    font-family: var(--font-type);
+    font-size: 16px;
+    border: 1px solid var(--line);
+    background: var(--vellum);
+  }
+  .locale button {
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: 0.06em;
+    border-right: 1px solid var(--line);
+    transition: all 0.25s;
+  }
+  .locale button:last-child { border-right: none; }
+  .locale button.active {
+    background: var(--ink);
+    color: var(--parchment);
+  }
+
+  /* Theme toggle — sol/lua estilizados */
+  .theme-toggle {
+    width: 44px; height: 28px;
+    border: 1px solid var(--line);
+    background: var(--vellum);
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    transition: all 0.25s;
+  }
+  .theme-toggle:hover { background: var(--parchment-2); }
+  .theme-toggle svg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--ink);
+    transition: transform 0.6s var(--ease-bloom);
+  }
+  [data-theme="dark"] .theme-toggle svg { transform: translate(-50%, -50%) rotate(180deg); }
+
+  /* Botão primário — selo lacrado */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 15px;
+    padding: 8px 18px;
+    background: var(--ink);
+    color: var(--parchment);
+    border: 1px solid var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-soft);
+    position: relative;
+  }
+  .btn:hover {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn.ghost:hover {
+    background: var(--ink);
+    color: var(--parchment);
+    border-color: var(--ink);
+  }
+  .btn .arrow {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 18px;
+    line-height: 0;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     HERO — página de rosto de herbário
+     ═══════════════════════════════════════════════════ */
+
+  main { position: relative; z-index: 2; }
+
+  .hero {
+    padding: var(--s-8) var(--s-5) var(--s-9);
+    max-width: 1500px;
+    margin: 0 auto;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: var(--s-7);
+    align-items: start;
+  }
+
+  /* Etiqueta de catálogo (canto superior) */
+  .catalog-label {
+    position: absolute;
+    top: var(--s-5);
+    right: var(--s-5);
+    font-family: var(--font-type);
+    font-size: 15px;
+    color: var(--ink-soft);
+    text-align: right;
+    line-height: 1.3;
+    letter-spacing: 0.05em;
+  }
+  .catalog-label strong {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    display: block;
+    letter-spacing: 0;
+  }
+
+  /* Numeração estilo Dewey */
+  .folio {
+    font-family: var(--font-type);
+    font-size: 16px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--s-5);
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .folio::before {
+    content: "";
+    width: 48px;
+    height: 1px;
+    background: var(--ink-faded);
+  }
+  .folio .star { color: var(--terracotta); font-size: 18px; }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(64px, 9vw, 144px);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin-bottom: var(--s-4);
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--moss);
+  }
+  .hero-title .underline {
+    position: relative;
+    display: inline-block;
+  }
+  .hero-title .underline::after {
+    content: "";
+    position: absolute;
+    left: -2%; right: -2%;
+    bottom: 0.08em;
+    height: 0.08em;
+    background: var(--terracotta);
+    opacity: 0.85;
+    transform-origin: left;
+    animation: drawUnderline 1.2s var(--ease-bloom) 0.8s forwards;
+    transform: scaleX(0);
+  }
+  @keyframes drawUnderline {
+    to { transform: scaleX(1); }
+  }
+
+  .hero-lede {
+    font-family: var(--font-body);
+    font-size: 20px;
+    font-style: italic;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 48ch;
+    margin: var(--s-5) 0 var(--s-6);
+  }
+  .hero-lede strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--ink);
+    background: linear-gradient(to top, rgba(184, 149, 74, 0.25) 50%, transparent 50%);
+    padding: 0 2px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: var(--s-6);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+    font-family: var(--font-type);
+    font-size: 15px;
+    color: var(--ink-faded);
+    letter-spacing: 0.05em;
+    flex-wrap: wrap;
+    margin-top: var(--s-6);
+  }
+  .hero-meta div strong {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    display: block;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .hero-note {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-faded);
+    margin-left: var(--s-3);
+  }
+
+  /* Botanical illustration panel */
+  .botanical-card {
+    background: var(--vellum);
+    border: 1px solid var(--line);
+    padding: var(--s-5);
+    position: relative;
+    box-shadow:
+      2px 2px 0 var(--line),
+      8px 8px 0 var(--parchment-3);
+  }
+  .botanical-card::before {
+    content: "";
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid var(--line-soft);
+    pointer-events: none;
+  }
+  .botanical-card .tag {
+    position: absolute;
+    top: -14px;
+    left: 24px;
+    background: var(--bordeaux);
+    color: var(--parchment);
+    font-family: var(--font-type);
+    font-size: 14px;
+    padding: 3px 12px;
+    letter-spacing: 0.1em;
+    transform: rotate(-2deg);
+  }
+  .botanical-illus {
+    width: 100%;
+    aspect-ratio: 3/4;
+    display: block;
+  }
+  .botanical-caption {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    text-align: center;
+    margin-top: var(--s-3);
+    padding-top: var(--s-3);
+    border-top: 1px dashed var(--line-soft);
+  }
+  .botanical-caption small {
+    display: block;
+    font-family: var(--font-type);
+    font-style: normal;
+    font-size: 13px;
+    color: var(--ink-faded);
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     SEPARADOR ORNAMENTADO
+     ═══════════════════════════════════════════════════ */
+
+  .flourish {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--s-6) var(--s-5);
+    color: var(--terracotta);
+  }
+  .flourish svg { width: 200px; }
+
+  /* ═══════════════════════════════════════════════════
+     SEÇÕES
+     ═══════════════════════════════════════════════════ */
+
+  .section {
+    padding: var(--s-8) var(--s-5);
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-6);
+    align-items: end;
+    margin-bottom: var(--s-7);
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 120px;
+    line-height: 0.85;
+    color: var(--terracotta);
+    font-feature-settings: "onum";
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5vw, 84px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--moss);
+  }
+  .section-intro {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-top: var(--s-3);
+    max-width: 56ch;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     FICHAS DO HERBÁRIO (features)
+     ═══════════════════════════════════════════════════ */
+
+  .specimens {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-5);
+  }
+
+  .specimen {
+    background: var(--vellum);
+    border: 1px solid var(--line);
+    padding: var(--s-5);
+    position: relative;
+    transition: transform 0.4s var(--ease-bloom);
+  }
+  .specimen:hover {
+    transform: translateY(-6px) rotate(-0.5deg);
+  }
+  .specimen::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed var(--line-soft);
+    pointer-events: none;
+  }
+
+  .specimen-num {
+    font-family: var(--font-type);
+    font-size: 15px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-4);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .specimen-illus {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto var(--s-4);
+    display: block;
+    color: var(--moss-deep);
+  }
+
+  .specimen-binomial {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 28px;
+    line-height: 1.1;
+    text-align: center;
+    color: var(--ink);
+    margin-bottom: var(--s-2);
+  }
+  .specimen-common {
+    font-family: var(--font-type);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    color: var(--terracotta);
+    text-align: center;
+    margin-bottom: var(--s-4);
+  }
+
+  .specimen-desc {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-align: center;
+    padding-top: var(--s-3);
+    border-top: 1px dashed var(--line-soft);
+  }
+  .specimen-desc em {
+    color: var(--moss);
+    font-weight: 500;
+  }
+
+  /* Primeira ficha — destaque (span 2) */
+  .specimen.hero-spec {
+    grid-column: span 2;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--s-5);
+    align-items: center;
+  }
+  .specimen.hero-spec .specimen-illus { margin: 0; width: 100%; height: auto; aspect-ratio: 1; }
+  .specimen.hero-spec .specimen-binomial,
+  .specimen.hero-spec .specimen-common,
+  .specimen.hero-spec .specimen-desc { text-align: left; }
+  .specimen.hero-spec .specimen-binomial { font-size: 42px; }
+  .specimen.hero-spec .specimen-desc { border-top: none; padding-top: 0; font-size: 16px; }
+
+  /* ═══════════════════════════════════════════════════
+     PREVIEW DO APP — caderno aberto
+     ═══════════════════════════════════════════════════ */
+
+  .notebook {
+    background: var(--vellum);
+    border: 1px solid var(--line);
+    box-shadow:
+      inset 0 0 0 8px var(--vellum),
+      inset 0 0 0 9px var(--line-soft),
+      10px 10px 0 var(--parchment-3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Costura central */
+  .notebook::before {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--line) 0 4px,
+      transparent 4px 10px
+    );
+    z-index: 2;
+  }
+
+  .notebook-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 560px;
+  }
+
+  /* Página esquerda */
+  .page-left, .page-right {
+    padding: var(--s-5) var(--s-6);
+    position: relative;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-type);
+    font-size: 14px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-4);
+  }
+
+  /* Cabeçalho de receita */
+  .recipe-title {
+    font-family: var(--font-display);
+    font-size: 54px;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: var(--s-2);
+  }
+  .recipe-title em { font-style: italic; color: var(--moss); }
+
+  .recipe-sub {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin-bottom: var(--s-4);
+  }
+
+  .recipe-meta {
+    display: flex;
+    gap: var(--s-4);
+    padding: var(--s-3) 0;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-4);
+    font-family: var(--font-type);
+    font-size: 14px;
+    color: var(--ink-faded);
+    letter-spacing: 0.05em;
+  }
+  .recipe-meta span strong {
+    display: block;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--ink);
+    letter-spacing: 0;
+  }
+
+  .section-h4 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--terracotta);
+    margin-bottom: var(--s-2);
+    padding-bottom: 4px;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+
+  .ingredients {
+    list-style: none;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    margin-bottom: var(--s-4);
+  }
+  .ingredients li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--s-2);
+    align-items: baseline;
+    padding: 2px 0;
+  }
+  .ingredients li::before {
+    content: "❦";
+    color: var(--terracotta);
+    font-size: 12px;
+  }
+  .ingredients li .dots {
+    border-bottom: 1px dotted var(--line-soft);
+    min-width: 20px;
+    height: 1em;
+  }
+  .ingredients li .qty {
+    font-family: var(--font-type);
+    font-size: 14px;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  /* Anotação manuscrita */
+  .handwritten-note {
+    position: relative;
+    background: #faf0d4;
+    color: var(--bordeaux);
+    padding: var(--s-3) var(--s-4);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.45;
+    border: 1px solid var(--line-soft);
+    transform: rotate(-1deg);
+    margin: var(--s-4) 0;
+    box-shadow: 2px 2px 6px rgba(42, 35, 23, 0.15);
+  }
+  [data-theme="dark"] .handwritten-note { background: #3a2f1e; color: var(--terracotta); }
+  .handwritten-note::before {
+    content: "";
+    position: absolute;
+    top: -8px; left: 50%;
+    width: 50px; height: 16px;
+    background: rgba(184, 88, 66, 0.5);
+    transform: translateX(-50%);
+    border: 1px solid rgba(42, 35, 23, 0.2);
+  }
+
+  /* Método/passos */
+  .method {
+    counter-reset: step;
+    margin-bottom: var(--s-4);
+  }
+  .method li {
+    list-style: none;
+    counter-increment: step;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    padding-left: 36px;
+    position: relative;
+    margin-bottom: var(--s-3);
+  }
+  .method li::before {
+    content: counter(step, lower-roman) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--terracotta);
+    line-height: 1;
+  }
+  .method li em {
+    color: var(--moss);
+    font-weight: 500;
+  }
+
+  /* Tags inferiores */
+  .recipe-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line-soft);
+  }
+  .tag-chip {
+    font-family: var(--font-type);
+    font-size: 14px;
+    padding: 2px 10px;
+    background: var(--parchment-2);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    letter-spacing: 0.05em;
+  }
+  .tag-chip.moss { background: var(--moss); color: var(--vellum); border-color: var(--moss); }
+  .tag-chip.terra { background: var(--terracotta); color: var(--vellum); border-color: var(--terracotta); }
+
+  /* Página direita — folha vegetal decorativa */
+  .vegetable-mark {
+    position: absolute;
+    right: var(--s-3);
+    top: var(--s-3);
+    width: 80px; height: 80px;
+    opacity: 0.2;
+    color: var(--moss);
+    pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ESPÉCIME TIPOGRÁFICO
+     ═══════════════════════════════════════════════════ */
+
+  .type-spec {
+    background: var(--vellum);
+    border: 1px solid var(--line);
+    padding: var(--s-7);
+    position: relative;
+  }
+  .type-spec::before, .type-spec::after {
+    content: "";
+    position: absolute;
+    width: 48px; height: 48px;
+    border: 1px solid var(--line);
+  }
+  .type-spec::before {
+    top: 12px; left: 12px;
+    border-right: none; border-bottom: none;
+  }
+  .type-spec::after {
+    bottom: 12px; right: 12px;
+    border-left: none; border-top: none;
+  }
+
+  .type-display {
+    font-family: var(--font-display);
+    font-size: clamp(120px, 20vw, 320px);
+    line-height: 0.82;
+    letter-spacing: -0.04em;
+    text-align: center;
+    color: var(--ink);
+  }
+  .type-display em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .type-display .am {
+    display: inline-block;
+    transform: translateY(-0.08em);
+    color: var(--gold-aged);
+  }
+
+  .type-specs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--s-5);
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+  }
+  .type-fam {
+    padding: var(--s-4);
+    border: 1px solid var(--line-soft);
+  }
+  .type-fam-label {
+    font-family: var(--font-type);
+    font-size: 14px;
+    color: var(--ink-faded);
+    letter-spacing: 0.15em;
+    margin-bottom: var(--s-2);
+  }
+  .type-fam-name {
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: var(--s-3);
+  }
+  .type-fam-name em { font-style: italic; color: var(--moss); }
+  .type-fam-sample {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    min-height: 4em;
+  }
+  .type-fam-sample.display { font-family: var(--font-display); font-style: italic; font-size: 18px; color: var(--ink); }
+  .type-fam-sample.body    { font-family: var(--font-body); }
+  .type-fam-sample.mono    { font-family: var(--font-type); font-size: 16px; letter-spacing: 0.03em; }
+  .type-fam-sample .hi { background: linear-gradient(to top, rgba(184, 149, 74, 0.3) 50%, transparent 50%); padding: 0 2px;}
+
+  /* ═══════════════════════════════════════════════════
+     PALETA — amostras de tinta
+     ═══════════════════════════════════════════════════ */
+
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--s-4);
+    margin-bottom: var(--s-7);
+  }
+
+  .ink-jar {
+    border: 1px solid var(--line);
+    padding: var(--s-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    background: var(--vellum);
+    position: relative;
+  }
+  .ink-swatch {
+    aspect-ratio: 4/3;
+    position: relative;
+    overflow: hidden;
+  }
+  .ink-swatch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2' seed='5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.15;
+    mix-blend-mode: multiply;
+  }
+  .ink-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .ink-details {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-type);
+    font-size: 13px;
+    color: var(--ink-faded);
+    letter-spacing: 0.08em;
+    padding-top: var(--s-2);
+    border-top: 1px dashed var(--line-soft);
+  }
+  .ink-details .hex { color: var(--ink); letter-spacing: 0.05em; }
+
+  /* ═══════════════════════════════════════════════════
+     COMPONENTES
+     ═══════════════════════════════════════════════════ */
+
+  .comp-book {
+    background: var(--vellum);
+    border: 1px solid var(--line);
+    padding: var(--s-5);
+  }
+  .comp-section-label {
+    font-family: var(--font-type);
+    font-size: 14px;
+    color: var(--ink-faded);
+    letter-spacing: 0.15em;
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--line-soft);
+    margin-bottom: var(--s-4);
+  }
+  .comp-row {
+    display: flex;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--s-4) 0;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .comp-row:last-child { border: none; padding-bottom: 0; }
+
+  .chip {
+    font-family: var(--font-type);
+    font-size: 14px;
+    padding: 3px 12px;
+    border: 1px solid var(--line);
+    background: var(--parchment);
+    color: var(--ink);
+    letter-spacing: 0.06em;
+  }
+  .chip.ripe { background: var(--terracotta); color: var(--vellum); border-color: var(--terracotta); }
+  .chip.leaf { background: var(--moss); color: var(--vellum); border-color: var(--moss); }
+  .chip.seed { background: var(--gold-aged); color: var(--ink); border-color: var(--gold-aged); }
+
+  .field {
+    position: relative;
+    min-width: 260px;
+  }
+  .field input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 0;
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+    outline: none;
+  }
+  .field input::placeholder { color: var(--ink-faded); }
+  .field input:focus { border-bottom-color: var(--terracotta); border-bottom-width: 2px; }
+  .field-label {
+    font-family: var(--font-type);
+    font-size: 13px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  /* Stamp component */
+  .stamp {
+    font-family: var(--font-type);
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    border: 2px solid var(--bordeaux);
+    color: var(--bordeaux);
+    padding: 4px 14px;
+    transform: rotate(-4deg);
+    display: inline-block;
+    text-transform: uppercase;
+  }
+  [data-theme="dark"] .stamp { border-color: var(--terracotta); color: var(--terracotta); }
+
+  /* ═══════════════════════════════════════════════════
+     FOOTER — colofão de livro antigo
+     ═══════════════════════════════════════════════════ */
+
+  .colophon {
+    padding: var(--s-8) var(--s-5) var(--s-5);
+    background: var(--parchment-2);
+    border-top: 2px double var(--line);
+    transition: background 0.8s;
+  }
+
+  .colophon-head {
+    text-align: center;
+    margin-bottom: var(--s-6);
+    padding-bottom: var(--s-5);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .colophon-flourish {
+    width: 120px;
+    margin: 0 auto var(--s-4);
+    color: var(--terracotta);
+  }
+
+  .colophon-motto {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(32px, 5vw, 64px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .colophon-motto em { color: var(--moss); }
+
+  .colophon-grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr repeat(4, 1fr);
+    gap: var(--s-5);
+  }
+  .colophon-grid h5 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--terracotta);
+    margin-bottom: var(--s-3);
+  }
+  .colophon-grid ul { list-style: none; }
+  .colophon-grid li { padding: 3px 0; }
+  .colophon-grid a {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  .colophon-grid a:hover { color: var(--ink); font-style: italic; }
+
+  .colophon-about {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 40ch;
+    margin-top: var(--s-2);
+  }
+
+  .colophon-foot {
+    max-width: 1400px;
+    margin: var(--s-6) auto 0;
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-type);
+    font-size: 13px;
+    color: var(--ink-faded);
+    letter-spacing: 0.1em;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════════════ */
+
+  @keyframes bloom {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .folio, .hero-title, .hero-lede, .hero-actions, .hero-meta, .botanical-card, .catalog-label {
+    opacity: 0;
+    animation: bloom 0.9s var(--ease-bloom) forwards;
+  }
+  .folio { animation-delay: 0.05s; }
+  .catalog-label { animation-delay: 0.1s; }
+  .hero-title { animation-delay: 0.15s; }
+  .hero-lede { animation-delay: 0.4s; }
+  .hero-actions { animation-delay: 0.6s; }
+  .hero-meta { animation-delay: 0.75s; }
+  .botanical-card { animation-delay: 0.35s; animation-duration: 1.2s; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .topbar-nav { display: none; }
+    .topbar { grid-template-columns: auto auto; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .catalog-label { display: none; }
+    .section-head { grid-template-columns: 1fr; gap: var(--s-3); }
+    .section-num { font-size: 80px; }
+    .specimens { grid-template-columns: 1fr; }
+    .specimen.hero-spec { grid-column: span 1; grid-template-columns: 1fr; }
+    .notebook-inner { grid-template-columns: 1fr; }
+    .notebook::before { display: none; }
+    .type-specs-grid { grid-template-columns: 1fr; }
+    .colophon-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+  <a href="#" class="brand">
+    <!-- Logo: folha com nervuras -->
+    <svg class="brand-mark" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+      <path d="M20 4 Q28 12 28 22 Q28 32 20 36 Q12 32 12 22 Q12 12 20 4 Z" fill="currentColor" fill-opacity="0.08"/>
+      <path d="M20 4 Q28 12 28 22 Q28 32 20 36 Q12 32 12 22 Q12 12 20 4 Z"/>
+      <line x1="20" y1="6" x2="20" y2="36"/>
+      <path d="M20 12 Q24 14 26 18 M20 18 Q25 20 27 24 M20 24 Q25 26 26 30 M20 12 Q16 14 14 18 M20 18 Q15 20 13 24 M20 24 Q15 26 14 30"/>
+    </svg>
+    <span class="brand-name">Jardim</span>
+  </a>
+
+  <nav class="topbar-nav">
+    <a href="#species" data-i18n="nav1">Espécimes</a>
+    <a href="#notebook" data-i18n="nav2">Caderno</a>
+    <a href="#letters" data-i18n="nav3">Tipografia</a>
+    <a href="#inks" data-i18n="nav4">Tintas</a>
+  </nav>
+
+  <div class="topbar-controls">
+    <div class="locale">
+      <button id="loc-pt" class="active">PT</button>
+      <button id="loc-en">EN</button>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4">
+        <!-- sol -->
+        <circle cx="12" cy="12" r="4" fill="currentColor"/>
+        <line x1="12" y1="2" x2="12" y2="5" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke-linecap="round"/>
+        <line x1="2" y1="12" x2="5" y2="12" stroke-linecap="round"/>
+        <line x1="19" y1="12" x2="22" y2="12" stroke-linecap="round"/>
+        <line x1="5" y1="5" x2="7" y2="7" stroke-linecap="round"/>
+        <line x1="17" y1="17" x2="19" y2="19" stroke-linecap="round"/>
+        <line x1="5" y1="19" x2="7" y2="17" stroke-linecap="round"/>
+        <line x1="17" y1="7" x2="19" y2="5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <a href="#" class="btn" data-i18n="cta-start">Cultivar <span class="arrow">→</span></a>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══════════ HERO ═══════════ -->
+<section class="hero">
+  <div class="catalog-label">
+    <strong>Hortus Conclusus</strong>
+    Nº 001 · MMXXVI<br>
+    São Paulo · Brasil
+  </div>
+
+  <div class="hero-grid">
+    <div>
+      <div class="folio">
+        <span class="star">✦</span>
+        <span>FOLIO I · ARS HORTULANA</span>
+      </div>
+
+      <h1 class="hero-title" data-i18n="hero">
+        Um caderno<br>
+        para o que <em>se</em><br>
+        <span class="underline">cultiva</span> devagar.
+      </h1>
+
+      <p class="hero-lede" data-i18n="lede">
+        Jardim é um herbário digital para <strong>receitas de família, fichas de plantas e rituais caseiros</strong>. Tudo aquilo que se aprende por repetição, se melhora por cuidado, e se perde por descuido.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#" class="btn" data-i18n="cta-try">Abrir meu caderno <span class="arrow">→</span></a>
+        <a href="#notebook" class="btn ghost" data-i18n="cta-see">Folhear exemplo</a>
+        <span class="hero-note" data-i18n="note">30 dias de graça · sem cartão</span>
+      </div>
+
+      <div class="hero-meta">
+        <div>
+          <strong>12.840</strong>
+          <span data-i18n="m1">ENTRADAS NO ACERVO</span>
+        </div>
+        <div>
+          <strong>3.127</strong>
+          <span data-i18n="m2">JARDINEIROS</span>
+        </div>
+        <div>
+          <strong>42</strong>
+          <span data-i18n="m3">PAÍSES</span>
+        </div>
+        <div>
+          <strong>MMXXVI</strong>
+          <span data-i18n="m4">ANO DE FUNDAÇÃO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ilustração botânica do hero -->
+    <div class="botanical-card">
+      <span class="tag" data-i18n="tag1">espécime tipo</span>
+      <svg class="botanical-illus" viewBox="0 0 200 260" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" style="color: var(--moss-deep);">
+        <!-- caule principal -->
+        <path d="M100 250 Q 102 200 100 150 Q 98 100 100 50" stroke-width="1.4"/>
+
+        <!-- folhas grandes embaixo esquerda -->
+        <path d="M100 220 Q 70 210 50 195 Q 45 190 55 188 Q 80 195 100 210" fill="currentColor" fill-opacity="0.1"/>
+        <path d="M100 220 Q 70 210 50 195 Q 45 190 55 188 Q 80 195 100 210"/>
+        <path d="M55 188 Q 75 195 95 212" stroke-dasharray="1 2"/>
+
+        <!-- folha grande direita -->
+        <path d="M100 210 Q 135 200 155 180 Q 160 175 150 173 Q 120 180 100 200" fill="currentColor" fill-opacity="0.1"/>
+        <path d="M100 210 Q 135 200 155 180 Q 160 175 150 173 Q 120 180 100 200"/>
+        <path d="M150 173 Q 125 185 105 202" stroke-dasharray="1 2"/>
+
+        <!-- folhas médias meio -->
+        <path d="M100 170 Q 75 165 60 150 Q 58 145 65 145 Q 85 150 100 162" fill="currentColor" fill-opacity="0.1"/>
+        <path d="M100 170 Q 75 165 60 150 Q 58 145 65 145 Q 85 150 100 162"/>
+        <path d="M100 160 Q 120 155 135 140 Q 138 135 132 135 Q 115 140 100 154" fill="currentColor" fill-opacity="0.1"/>
+        <path d="M100 160 Q 120 155 135 140 Q 138 135 132 135 Q 115 140 100 154"/>
+
+        <!-- folhas menores em cima -->
+        <path d="M100 110 Q 85 108 75 95 Q 73 90 80 92 Q 90 97 100 106"/>
+        <path d="M100 110 Q 115 108 125 95 Q 127 90 120 92 Q 110 97 100 106"/>
+        <path d="M100 85 Q 88 82 80 70 Q 79 67 84 68 Q 92 72 100 82"/>
+        <path d="M100 85 Q 112 82 120 70 Q 121 67 116 68 Q 108 72 100 82"/>
+
+        <!-- flor no topo -->
+        <circle cx="100" cy="45" r="3" fill="currentColor"/>
+        <path d="M100 45 Q 92 35 88 40 Q 85 45 92 48 Z" fill="var(--terracotta)" stroke="var(--terracotta)" fill-opacity="0.6"/>
+        <path d="M100 45 Q 108 35 112 40 Q 115 45 108 48 Z" fill="var(--terracotta)" stroke="var(--terracotta)" fill-opacity="0.6"/>
+        <path d="M100 45 Q 95 32 102 30 Q 108 32 105 45 Z" fill="var(--terracotta)" stroke="var(--terracotta)" fill-opacity="0.6"/>
+        <path d="M100 45 Q 103 55 98 58 Q 93 55 98 45 Z" fill="var(--terracotta)" stroke="var(--terracotta)" fill-opacity="0.4"/>
+
+        <!-- raiz -->
+        <path d="M100 250 Q 95 255 90 258" stroke-dasharray="1 2"/>
+        <path d="M100 250 Q 105 255 110 258" stroke-dasharray="1 2"/>
+        <path d="M100 250 L 100 260" stroke-dasharray="1 2"/>
+
+        <!-- linhas do solo -->
+        <line x1="50" y1="248" x2="150" y2="248" stroke-dasharray="3 4" opacity="0.5"/>
+      </svg>
+      <div class="botanical-caption">
+        <em>Rosmarinus officinalis</em>
+        <small data-i18n="caption">Alecrim · família Lamiaceae · iluminura MMXXVI</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FLOURISH SEPARATOR ═══════════ -->
+<div class="flourish">
+  <svg viewBox="0 0 200 30" fill="none" stroke="currentColor" stroke-width="0.8">
+    <path d="M10 15 Q 30 5 50 15 Q 60 25 70 15 Q 80 5 90 15"/>
+    <circle cx="100" cy="15" r="3" fill="currentColor"/>
+    <path d="M110 15 Q 120 25 130 15 Q 140 5 150 15 Q 170 25 190 15"/>
+    <path d="M98 10 L 102 20 M 102 10 L 98 20" stroke-width="0.5"/>
+  </svg>
+</div>
+
+<!-- ═══════════ ESPÉCIMES (FEATURES) ═══════════ -->
+<section class="section" id="species">
+  <div class="section-head">
+    <div class="section-num">I</div>
+    <div>
+      <h2 class="section-title" data-i18n="sTitle">Seis modos de <em>cultivar</em>.</h2>
+      <p class="section-intro" data-i18n="sIntro">Cada entrada do seu acervo é tratada como um espécime: observada, descrita, datada, guardada. Com o cuidado de quem prensa uma folha entre as páginas de um livro para que ela dure.</p>
+    </div>
+  </div>
+
+  <div class="specimens">
+
+    <!-- Spec 1: hero -->
+    <article class="specimen hero-spec">
+      <svg class="specimen-illus" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <!-- caderno aberto visto de cima -->
+        <rect x="20" y="20" width="80" height="85" fill="var(--vellum)"/>
+        <rect x="20" y="20" width="80" height="85"/>
+        <line x1="60" y1="20" x2="60" y2="105"/>
+        <line x1="28" y1="35" x2="55" y2="35" stroke-width="0.5"/>
+        <line x1="28" y1="42" x2="55" y2="42" stroke-width="0.5"/>
+        <line x1="28" y1="49" x2="52" y2="49" stroke-width="0.5"/>
+        <line x1="28" y1="56" x2="55" y2="56" stroke-width="0.5"/>
+        <!-- folhinha na página direita -->
+        <path d="M80 40 Q 85 50 80 60 Q 75 50 80 40 Z" fill="var(--terracotta)" fill-opacity="0.3" stroke="var(--terracotta)"/>
+        <path d="M65 50 Q 68 55 72 58 M76 55 Q 80 60 82 65" stroke-width="0.5" stroke-dasharray="1 1"/>
+        <!-- pressa com barbante -->
+        <circle cx="60" cy="20" r="2" fill="currentColor"/>
+        <path d="M60 5 Q 58 12 60 20" stroke-width="0.7"/>
+      </svg>
+      <div>
+        <div class="specimen-num">
+          <span>№ 01</span>
+          <span data-i18n="cat1">COLECTIO</span>
+        </div>
+        <div class="specimen-binomial"><em>Coletar</em> sem pressa</div>
+        <div class="specimen-common" data-i18n="sp1c">AO LONGO DOS ANOS</div>
+        <p class="specimen-desc" data-i18n="sp1d">
+          Registre receitas herdadas, fichas de temperos, truques caseiros, <em>sempre que lembrar.</em> Jardim organiza por estação, por quem lhe ensinou, por humor. Sua memória e a dos que vieram antes, finalmente num só lugar.
+        </p>
+      </div>
+    </article>
+
+    <!-- Spec 2 -->
+    <article class="specimen">
+      <div class="specimen-num">
+        <span>№ 02</span>
+        <span data-i18n="cat2">SEMINA</span>
+      </div>
+      <svg class="specimen-illus" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Semente germinando -->
+        <ellipse cx="60" cy="75" rx="14" ry="10" fill="currentColor" fill-opacity="0.15"/>
+        <ellipse cx="60" cy="75" rx="14" ry="10"/>
+        <path d="M60 75 Q 60 55 60 30"/>
+        <path d="M60 50 Q 48 45 40 38 Q 45 40 52 48 Q 58 52 60 55" fill="var(--moss)" fill-opacity="0.3" stroke="var(--moss)"/>
+        <path d="M60 42 Q 72 37 80 30 Q 75 32 68 40 Q 62 44 60 47" fill="var(--moss)" fill-opacity="0.3" stroke="var(--moss)"/>
+        <path d="M40 85 Q 35 95 30 105 M50 87 Q 45 98 40 108 M70 87 Q 75 98 80 108 M80 85 Q 85 95 90 105" stroke-dasharray="1 2"/>
+      </svg>
+      <div class="specimen-binomial"><em>Plantar</em> conversas</div>
+      <div class="specimen-common" data-i18n="sp2c">GRAVAÇÃO GENTIL</div>
+      <p class="specimen-desc" data-i18n="sp2d">Grave a avó contando como faz o arroz. Jardim transcreve, pontua, respeita a pausa. <em>Fica a voz</em>, fica a receita.</p>
+    </article>
+
+    <!-- Spec 3 -->
+    <article class="specimen">
+      <div class="specimen-num">
+        <span>№ 03</span>
+        <span data-i18n="cat3">CONSERVATIO</span>
+      </div>
+      <svg class="specimen-illus" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Pote de conserva -->
+        <path d="M40 30 L 80 30 L 80 35 L 78 40 L 78 95 Q 78 100 73 100 L 47 100 Q 42 100 42 95 L 42 40 L 40 35 Z" fill="currentColor" fill-opacity="0.08"/>
+        <path d="M40 30 L 80 30 L 80 35 L 78 40 L 78 95 Q 78 100 73 100 L 47 100 Q 42 100 42 95 L 42 40 L 40 35 Z"/>
+        <line x1="40" y1="35" x2="80" y2="35"/>
+        <!-- conteúdo -->
+        <circle cx="52" cy="60" r="3" fill="var(--terracotta)" fill-opacity="0.5"/>
+        <circle cx="64" cy="65" r="3" fill="var(--terracotta)" fill-opacity="0.5"/>
+        <circle cx="58" cy="75" r="3" fill="var(--terracotta)" fill-opacity="0.5"/>
+        <circle cx="68" cy="80" r="3" fill="var(--terracotta)" fill-opacity="0.5"/>
+        <!-- linha d'água -->
+        <path d="M44 55 Q 55 53 66 55 Q 72 56 76 55" stroke-dasharray="1 2"/>
+        <!-- etiqueta -->
+        <rect x="44" y="82" width="30" height="10" fill="var(--parchment)" stroke="currentColor" stroke-width="0.5"/>
+      </svg>
+      <div class="specimen-binomial"><em>Guardar</em> em cifra</div>
+      <div class="specimen-common" data-i18n="sp3c">CRIPTOGRAFIA DE FAMÍLIA</div>
+      <p class="specimen-desc" data-i18n="sp3d">Sua coleção é sua. Criptografia <em>ponta-a-ponta</em> por padrão. Partilhe apenas quando, e com quem, quiser.</p>
+    </article>
+
+    <!-- Spec 4 -->
+    <article class="specimen">
+      <div class="specimen-num">
+        <span>№ 04</span>
+        <span data-i18n="cat4">CONVIVIUM</span>
+      </div>
+      <svg class="specimen-illus" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Três caderninhos conectados -->
+        <rect x="15" y="40" width="26" height="34" fill="var(--vellum)"/>
+        <rect x="15" y="40" width="26" height="34"/>
+        <line x1="19" y1="48" x2="37" y2="48" stroke-width="0.5"/>
+        <line x1="19" y1="54" x2="35" y2="54" stroke-width="0.5"/>
+
+        <rect x="47" y="30" width="26" height="34" fill="var(--vellum)"/>
+        <rect x="47" y="30" width="26" height="34"/>
+        <line x1="51" y1="38" x2="69" y2="38" stroke-width="0.5"/>
+        <line x1="51" y1="44" x2="67" y2="44" stroke-width="0.5"/>
+
+        <rect x="79" y="50" width="26" height="34" fill="var(--vellum)"/>
+        <rect x="79" y="50" width="26" height="34"/>
+        <line x1="83" y1="58" x2="101" y2="58" stroke-width="0.5"/>
+        <line x1="83" y1="64" x2="99" y2="64" stroke-width="0.5"/>
+
+        <!-- fio que liga -->
+        <path d="M41 57 Q 44 50 47 47 M 73 47 Q 76 50 79 67" stroke-width="0.7" stroke-dasharray="2 2" stroke="var(--terracotta)"/>
+        <circle cx="41" cy="57" r="1.5" fill="var(--terracotta)"/>
+        <circle cx="47" cy="47" r="1.5" fill="var(--terracotta)"/>
+        <circle cx="73" cy="47" r="1.5" fill="var(--terracotta)"/>
+        <circle cx="79" cy="67" r="1.5" fill="var(--terracotta)"/>
+      </svg>
+      <div class="specimen-binomial"><em>Passar</em> adiante</div>
+      <div class="specimen-common" data-i18n="sp4c">LIVROS DE CASA</div>
+      <p class="specimen-desc" data-i18n="sp4d">Compartilhe um caderno com a família. Cada membro escreve à sua letra, <em>cada mão deixa sua marca</em>.</p>
+    </article>
+
+    <!-- Spec 5 -->
+    <article class="specimen">
+      <div class="specimen-num">
+        <span>№ 05</span>
+        <span data-i18n="cat5">IMPRESSIO</span>
+      </div>
+      <svg class="specimen-illus" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Livro impresso/capa -->
+        <path d="M30 20 L 30 100 L 90 100 L 90 20 L 60 25 L 30 20 Z" fill="currentColor" fill-opacity="0.08"/>
+        <path d="M30 20 L 30 100 L 90 100 L 90 20 L 60 25 L 30 20 Z"/>
+        <line x1="60" y1="25" x2="60" y2="100"/>
+        <text x="45" y="55" font-family="Georgia" font-style="italic" font-size="10" fill="currentColor" text-anchor="middle">Nº 1</text>
+        <text x="75" y="55" font-family="Georgia" font-style="italic" font-size="10" fill="currentColor" text-anchor="middle">Nº 2</text>
+        <!-- lombada -->
+        <rect x="58" y="20" width="4" height="80" fill="var(--terracotta)" fill-opacity="0.3"/>
+      </svg>
+      <div class="specimen-binomial"><em>Imprimir</em> em livro</div>
+      <div class="specimen-common" data-i18n="sp5c">EDIÇÃO CASEIRA</div>
+      <p class="specimen-desc" data-i18n="sp5d">No fim do ano, gere um PDF encadernável. Brochura costurada ou capa dura — <em>um livro de família</em>, feito por você.</p>
+    </article>
+
+  </div>
+</section>
+
+<!-- ═══════════ CADERNO (PREVIEW) ═══════════ -->
+<section class="section" id="notebook">
+  <div class="section-head">
+    <div class="section-num">II</div>
+    <div>
+      <h2 class="section-title" data-i18n="nTitle">O caderno, <em>por dentro</em>.</h2>
+      <p class="section-intro" data-i18n="nIntro">Cada entrada tem página dupla: à esquerda, a receita em si; à direita, notas, origens, variações. Como um bom caderno merece.</p>
+    </div>
+  </div>
+
+  <div class="notebook">
+    <div class="notebook-inner">
+
+      <!-- Página esquerda -->
+      <div class="page-left">
+        <div class="page-header">
+          <span data-i18n="page1">FÓLIO 127 — VERSO</span>
+          <span data-i18n="date1">23 · IV · 2026</span>
+        </div>
+
+        <h3 class="recipe-title" data-i18n="recipe">
+          Pão de <em>alecrim</em><br>da avó Teresa
+        </h3>
+        <p class="recipe-sub" data-i18n="recipeSub">Receita trazida de Braga em 1953, adaptada ao clima de SP.</p>
+
+        <div class="recipe-meta">
+          <span><strong>8h 20m</strong><span data-i18n="mTime">TEMPO</span></span>
+          <span><strong>2</strong><span data-i18n="mPão">PÃES</span></span>
+          <span><strong>fácil</strong><span data-i18n="mLevel">NÍVEL</span></span>
+          <span><strong>forno</strong><span data-i18n="mTool">UTENSÍLIO</span></span>
+        </div>
+
+        <h4 class="section-h4" data-i18n="hIng">Ingredientes</h4>
+        <ul class="ingredients">
+          <li><span data-i18n="i1">Farinha de trigo tipo 1</span><span class="dots"></span><span class="qty">500 g</span></li>
+          <li><span data-i18n="i2">Água morna (37°)</span><span class="dots"></span><span class="qty">320 ml</span></li>
+          <li><span data-i18n="i3">Fermento biológico seco</span><span class="dots"></span><span class="qty">7 g</span></li>
+          <li><span data-i18n="i4">Sal marinho</span><span class="dots"></span><span class="qty">10 g</span></li>
+          <li><span data-i18n="i5">Azeite extravirgem</span><span class="dots"></span><span class="qty">30 ml</span></li>
+          <li><span data-i18n="i6">Alecrim fresco, só as folhas</span><span class="dots"></span><span class="qty">2 col.</span></li>
+          <li><span data-i18n="i7">Flor de sal para finalizar</span><span class="dots"></span><span class="qty">q. b.</span></li>
+        </ul>
+
+        <div class="handwritten-note" data-i18n="note1">
+          "Se o alecrim for do vaso da janela, melhor ainda. Colha antes do sol forte."
+        </div>
+
+        <div class="recipe-tags">
+          <span class="tag-chip leaf">#pão</span>
+          <span class="tag-chip">#ervas</span>
+          <span class="tag-chip terra">#família</span>
+          <span class="tag-chip">#domingo</span>
+          <span class="tag-chip">#outono</span>
+        </div>
+      </div>
+
+      <!-- Página direita -->
+      <div class="page-right">
+        <svg class="vegetable-mark" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round">
+          <path d="M40 10 Q 48 24 48 40 Q 48 56 40 70 Q 32 56 32 40 Q 32 24 40 10 Z" fill="currentColor" fill-opacity="0.1"/>
+          <path d="M40 10 Q 48 24 48 40 Q 48 56 40 70 Q 32 56 32 40 Q 32 24 40 10 Z"/>
+          <line x1="40" y1="14" x2="40" y2="66"/>
+          <path d="M40 24 L 44 28 M 40 32 L 45 36 M 40 40 L 46 44 M 40 48 L 45 52 M 40 56 L 44 60"/>
+          <path d="M40 24 L 36 28 M 40 32 L 35 36 M 40 40 L 34 44 M 40 48 L 35 52 M 40 56 L 36 60"/>
+        </svg>
+
+        <div class="page-header">
+          <span data-i18n="page2">FÓLIO 127 — RECTO</span>
+          <span data-i18n="date2">MARGEM</span>
+        </div>
+
+        <h4 class="section-h4" data-i18n="hMethod">Modo de fazer</h4>
+        <ol class="method">
+          <li data-i18n="st1">Dissolver o <em>fermento</em> em água morna, com pitada de açúcar. Esperar espumar.</li>
+          <li data-i18n="st2">Misturar farinha e sal em tigela larga. Abrir um poço no meio.</li>
+          <li data-i18n="st3">Verter o fermento e o azeite. Incorporar devagar, <em>com a ponta dos dedos</em>.</li>
+          <li data-i18n="st4">Sovar até a massa desgrudar das mãos — entre 10 e 15 minutos de silêncio.</li>
+          <li data-i18n="st5">Deixar descansar coberta, <em>entre duas e três horas</em>, até dobrar.</li>
+          <li data-i18n="st6">Modelar, espalhar alecrim e flor de sal. Forno alto, 220°, por 25 minutos.</li>
+        </ol>
+
+        <h4 class="section-h4" data-i18n="hOrigin">Origem & variações</h4>
+        <p style="font-family: var(--font-body); font-style: italic; font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin-bottom: var(--s-3);" data-i18n="origin">
+          Esta receita chegou com minha avó Teresa, de Braga, no verão de 1953. Na versão original ela usava azeite de um primo que fazia em casa — o nosso aqui é da serra da Mantiqueira, mas o <em>espírito</em> é o mesmo.
+        </p>
+
+        <div style="display: flex; justify-content: space-between; padding-top: var(--s-3); border-top: 1px dashed var(--line-soft); font-family: var(--font-type); font-size: 14px; color: var(--ink-faded); letter-spacing: 0.05em;">
+          <span data-i18n="byWho">escrito por · maria</span>
+          <span class="stamp" data-i18n="stamp">aprovado</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ ESPÉCIME TIPOGRÁFICO ═══════════ -->
+<section class="section" id="letters">
+  <div class="section-head">
+    <div class="section-num">III</div>
+    <div>
+      <h2 class="section-title" data-i18n="tTitle">Três <em>letras</em>, um alfabeto.</h2>
+      <p class="section-intro" data-i18n="tIntro">A tipografia do Jardim celebra o contraste entre o culto e o doméstico — entre a página impressa e a receita rabiscada na borda do caderno.</p>
+    </div>
+  </div>
+
+  <div class="type-spec">
+    <div class="type-display">Aa<span class="am"> &amp; </span><em>Aa</em></div>
+
+    <div class="type-specs-grid">
+      <div class="type-fam">
+        <div class="type-fam-label">DISPLAY</div>
+        <div class="type-fam-name">DM Serif <em>Display</em></div>
+        <div class="type-fam-sample display" data-i18n="tyD">Da semente se faz um bosque, se esperamos o bastante.</div>
+      </div>
+      <div class="type-fam">
+        <div class="type-fam-label">CORPO</div>
+        <div class="type-fam-name">Lora <em>Serif</em></div>
+        <div class="type-fam-sample body" data-i18n="tyB">Uma humanista contemporânea com caráter caligráfico discreto. Legível em longas leituras, com <span class="hi">belos itálicos</span> para ênfase afetiva.</div>
+      </div>
+      <div class="type-fam">
+        <div class="type-fam-label">MÁQUINA</div>
+        <div class="type-fam-name">VT323 <em>Mono</em></div>
+        <div class="type-fam-sample mono">FÓLIO 127 · Nº 01<br>dados do espécime<br>✦ MMXXVI · SP ✦</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PALETA DE TINTAS ═══════════ -->
+<section class="section" id="inks">
+  <div class="section-head">
+    <div class="section-num">IV</div>
+    <div>
+      <h2 class="section-title" data-i18n="pTitle">Sete <em>tintas</em>, sete humores.</h2>
+      <p class="section-intro" data-i18n="pIntro">Pigmentos pensados para envelhecer bem. Nada grita; tudo convive. A paleta inteira vira sua contrária no modo noturno, como um caderno lido à luz de vela.</p>
+    </div>
+  </div>
+
+  <div class="swatches">
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--parchment);"></div>
+      <div class="ink-name">Pergaminho</div>
+      <div class="ink-details"><span data-i18n="r1">Base</span><span class="hex">#F0E8D3</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--ink);"></div>
+      <div class="ink-name">Tinta-terra</div>
+      <div class="ink-details"><span data-i18n="r2">Texto</span><span class="hex">#2A2317</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--moss);"></div>
+      <div class="ink-name">Musgo</div>
+      <div class="ink-details"><span data-i18n="r3">Secundária</span><span class="hex">#556B2F</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--terracotta);"></div>
+      <div class="ink-name">Terracota</div>
+      <div class="ink-details"><span data-i18n="r4">Destaque</span><span class="hex">#B85842</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--sepia);"></div>
+      <div class="ink-name">Sépia</div>
+      <div class="ink-details"><span data-i18n="r5">Anotação</span><span class="hex">#8B6F3D</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--gold-aged);"></div>
+      <div class="ink-name">Ouro velho</div>
+      <div class="ink-details"><span data-i18n="r6">Realce</span><span class="hex">#B8954A</span></div>
+    </div>
+    <div class="ink-jar">
+      <div class="ink-swatch" style="background: var(--bordeaux);"></div>
+      <div class="ink-name">Bordô</div>
+      <div class="ink-details"><span data-i18n="r7">Selo</span><span class="hex">#722D2D</span></div>
+    </div>
+  </div>
+
+  <div class="comp-book">
+    <div class="comp-section-label" data-i18n="compT">COMPONENTES · amostras</div>
+
+    <div class="comp-row">
+      <a href="#" class="btn" data-i18n="bPrim">Botão primário <span class="arrow">→</span></a>
+      <a href="#" class="btn ghost" data-i18n="bGhost">Fantasma</a>
+      <span class="chip">default</span>
+      <span class="chip leaf">● folha</span>
+      <span class="chip ripe">● madura</span>
+      <span class="chip seed">● semente</span>
+    </div>
+
+    <div class="comp-row">
+      <div class="field">
+        <div class="field-label" data-i18n="fLabel">TÍTULO DA ENTRADA</div>
+        <input type="text" placeholder="Pão de alecrim da avó…" data-i18n-ph="ph1">
+      </div>
+      <span class="stamp" data-i18n="stamp2">rascunho</span>
+      <span class="stamp" style="border-color: var(--moss); color: var(--moss);" data-i18n="stamp3">aprovado</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══════════ COLOFÃO ═══════════ -->
+<footer class="colophon">
+  <div class="colophon-head">
+    <svg class="colophon-flourish" viewBox="0 0 120 50" fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round">
+      <path d="M10 25 Q 25 10 40 25 Q 45 35 50 25"/>
+      <circle cx="60" cy="25" r="4" fill="currentColor"/>
+      <path d="M60 25 Q 56 18 52 15 M60 25 Q 64 18 68 15 M60 25 Q 56 32 52 35 M60 25 Q 64 32 68 35" stroke-width="0.7"/>
+      <path d="M70 25 Q 75 35 80 25 Q 95 10 110 25"/>
+    </svg>
+    <div class="colophon-motto" data-i18n="motto">O que se cultiva com<br>cuidado, <em>perdura</em>.</div>
+  </div>
+
+  <div class="colophon-grid">
+    <div>
+      <h5 data-i18n="cAbout">Sobre</h5>
+      <p class="colophon-about" data-i18n="cAboutText">Jardim é um estúdio independente em São Paulo. Fazemos objetos digitais com o cuidado de quem lê livros antigos e ainda assim acredita no futuro.</p>
+    </div>
+    <div>
+      <h5 data-i18n="cProduct">Produto</h5>
+      <ul>
+        <li><a href="#" data-i18n="cp1">Baixar</a></li>
+        <li><a href="#" data-i18n="cp2">Preços</a></li>
+        <li><a href="#" data-i18n="cp3">Novidades</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="cStudio">Estúdio</h5>
+      <ul>
+        <li><a href="#" data-i18n="cs1">Manifesto</a></li>
+        <li><a href="#" data-i18n="cs2">Carta semanal</a></li>
+        <li><a href="#" data-i18n="cs3">Contato</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="cHelp">Ajuda</h5>
+      <ul>
+        <li><a href="#" data-i18n="ch1">Guia</a></li>
+        <li><a href="#" data-i18n="ch2">FAQ</a></li>
+        <li><a href="#" data-i18n="ch3">Importar dados</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5 data-i18n="cLegal">Legal</h5>
+      <ul>
+        <li><a href="#" data-i18n="cl1">Privacidade</a></li>
+        <li><a href="#" data-i18n="cl2">Termos</a></li>
+        <li><a href="#" data-i18n="cl3">Licenças</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="colophon-foot">
+    <span>JARDIM · ESTÚDIO · MMXXVI · SÃO PAULO</span>
+    <span data-i18n="cMotto">Festina lente — apressa-te devagar</span>
+  </div>
+</footer>
+
+<script>
+  // ═══════════ THEME TOGGLE ═══════════
+  const root = document.documentElement;
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+
+  // ═══════════ LOCALE (PT ↔ EN) ═══════════
+  const i18n = {
+    pt: {
+      'nav1': 'Espécimes', 'nav2': 'Caderno', 'nav3': 'Tipografia', 'nav4': 'Tintas',
+      'cta-start': 'Cultivar',
+      'hero': 'Um caderno<br>para o que <em>se</em><br><span class="underline">cultiva</span> devagar.',
+      'lede': 'Jardim é um herbário digital para <strong>receitas de família, fichas de plantas e rituais caseiros</strong>. Tudo aquilo que se aprende por repetição, se melhora por cuidado, e se perde por descuido.',
+      'cta-try': 'Abrir meu caderno',
+      'cta-see': 'Folhear exemplo',
+      'note': '30 dias de graça · sem cartão',
+      'm1': 'ENTRADAS NO ACERVO', 'm2': 'JARDINEIROS', 'm3': 'PAÍSES', 'm4': 'ANO DE FUNDAÇÃO',
+      'tag1': 'espécime tipo',
+      'caption': 'Alecrim · família Lamiaceae · iluminura MMXXVI',
+      'sTitle': 'Seis modos de <em>cultivar</em>.',
+      'sIntro': 'Cada entrada do seu acervo é tratada como um espécime: observada, descrita, datada, guardada. Com o cuidado de quem prensa uma folha entre as páginas de um livro para que ela dure.',
+      'cat1': 'COLECTIO', 'cat2': 'SEMINA', 'cat3': 'CONSERVATIO', 'cat4': 'CONVIVIUM', 'cat5': 'IMPRESSIO',
+      'sp1c': 'AO LONGO DOS ANOS',
+      'sp1d': 'Registre receitas herdadas, fichas de temperos, truques caseiros, <em>sempre que lembrar.</em> Jardim organiza por estação, por quem lhe ensinou, por humor. Sua memória e a dos que vieram antes, finalmente num só lugar.',
+      'sp2c': 'GRAVAÇÃO GENTIL',
+      'sp2d': 'Grave a avó contando como faz o arroz. Jardim transcreve, pontua, respeita a pausa. <em>Fica a voz</em>, fica a receita.',
+      'sp3c': 'CRIPTOGRAFIA DE FAMÍLIA',
+      'sp3d': 'Sua coleção é sua. Criptografia <em>ponta-a-ponta</em> por padrão. Partilhe apenas quando, e com quem, quiser.',
+      'sp4c': 'LIVROS DE CASA',
+      'sp4d': 'Compartilhe um caderno com a família. Cada membro escreve à sua letra, <em>cada mão deixa sua marca</em>.',
+      'sp5c': 'EDIÇÃO CASEIRA',
+      'sp5d': 'No fim do ano, gere um PDF encadernável. Brochura costurada ou capa dura — <em>um livro de família</em>, feito por você.',
+      'nTitle': 'O caderno, <em>por dentro</em>.',
+      'nIntro': 'Cada entrada tem página dupla: à esquerda, a receita em si; à direita, notas, origens, variações. Como um bom caderno merece.',
+      'page1': 'FÓLIO 127 — VERSO', 'date1': '23 · IV · 2026',
+      'page2': 'FÓLIO 127 — RECTO', 'date2': 'MARGEM',
+      'recipe': 'Pão de <em>alecrim</em><br>da avó Teresa',
+      'recipeSub': 'Receita trazida de Braga em 1953, adaptada ao clima de SP.',
+      'mTime': 'TEMPO', 'mPão': 'PÃES', 'mLevel': 'NÍVEL', 'mTool': 'UTENSÍLIO',
+      'hIng': 'Ingredientes',
+      'i1': 'Farinha de trigo tipo 1', 'i2': 'Água morna (37°)', 'i3': 'Fermento biológico seco',
+      'i4': 'Sal marinho', 'i5': 'Azeite extravirgem', 'i6': 'Alecrim fresco, só as folhas',
+      'i7': 'Flor de sal para finalizar',
+      'note1': '"Se o alecrim for do vaso da janela, melhor ainda. Colha antes do sol forte."',
+      'hMethod': 'Modo de fazer',
+      'st1': 'Dissolver o <em>fermento</em> em água morna, com pitada de açúcar. Esperar espumar.',
+      'st2': 'Misturar farinha e sal em tigela larga. Abrir um poço no meio.',
+      'st3': 'Verter o fermento e o azeite. Incorporar devagar, <em>com a ponta dos dedos</em>.',
+      'st4': 'Sovar até a massa desgrudar das mãos — entre 10 e 15 minutos de silêncio.',
+      'st5': 'Deixar descansar coberta, <em>entre duas e três horas</em>, até dobrar.',
+      'st6': 'Modelar, espalhar alecrim e flor de sal. Forno alto, 220°, por 25 minutos.',
+      'hOrigin': 'Origem & variações',
+      'origin': 'Esta receita chegou com minha avó Teresa, de Braga, no verão de 1953. Na versão original ela usava azeite de um primo que fazia em casa — o nosso aqui é da serra da Mantiqueira, mas o <em>espírito</em> é o mesmo.',
+      'byWho': 'escrito por · maria',
+      'stamp': 'aprovado',
+      'tTitle': 'Três <em>letras</em>, um alfabeto.',
+      'tIntro': 'A tipografia do Jardim celebra o contraste entre o culto e o doméstico — entre a página impressa e a receita rabiscada na borda do caderno.',
+      'tyD': 'Da semente se faz um bosque, se esperamos o bastante.',
+      'tyB': 'Uma humanista contemporânea com caráter caligráfico discreto. Legível em longas leituras, com <span class="hi">belos itálicos</span> para ênfase afetiva.',
+      'pTitle': 'Sete <em>tintas</em>, sete humores.',
+      'pIntro': 'Pigmentos pensados para envelhecer bem. Nada grita; tudo convive. A paleta inteira vira sua contrária no modo noturno, como um caderno lido à luz de vela.',
+      'r1': 'Base', 'r2': 'Texto', 'r3': 'Secundária', 'r4': 'Destaque', 'r5': 'Anotação', 'r6': 'Realce', 'r7': 'Selo',
+      'compT': 'COMPONENTES · amostras',
+      'bPrim': 'Botão primário', 'bGhost': 'Fantasma',
+      'fLabel': 'TÍTULO DA ENTRADA',
+      'ph1': 'Pão de alecrim da avó…',
+      'stamp2': 'rascunho', 'stamp3': 'aprovado',
+      'motto': 'O que se cultiva com<br>cuidado, <em>perdura</em>.',
+      'cAbout': 'Sobre',
+      'cAboutText': 'Jardim é um estúdio independente em São Paulo. Fazemos objetos digitais com o cuidado de quem lê livros antigos e ainda assim acredita no futuro.',
+      'cProduct': 'Produto', 'cp1': 'Baixar', 'cp2': 'Preços', 'cp3': 'Novidades',
+      'cStudio': 'Estúdio', 'cs1': 'Manifesto', 'cs2': 'Carta semanal', 'cs3': 'Contato',
+      'cHelp': 'Ajuda', 'ch1': 'Guia', 'ch2': 'FAQ', 'ch3': 'Importar dados',
+      'cLegal': 'Legal', 'cl1': 'Privacidade', 'cl2': 'Termos', 'cl3': 'Licenças',
+      'cMotto': 'Festina lente — apressa-te devagar'
+    },
+    en: {
+      'nav1': 'Specimens', 'nav2': 'Notebook', 'nav3': 'Type', 'nav4': 'Inks',
+      'cta-start': 'Cultivate',
+      'hero': 'A notebook<br>for what grows<br><span class="underline">slowly</span>.',
+      'lede': 'Jardim is a digital herbarium for <strong>family recipes, plant cards, and household rituals</strong>. Everything you learn by repetition, perfect by care, and lose through neglect.',
+      'cta-try': 'Open my notebook',
+      'cta-see': 'Leaf through a sample',
+      'note': '30 days free · no card',
+      'm1': 'ENTRIES IN THE ARCHIVE', 'm2': 'GARDENERS', 'm3': 'COUNTRIES', 'm4': 'FOUNDED',
+      'tag1': 'type specimen',
+      'caption': 'Rosemary · Lamiaceae family · illumination MMXXVI',
+      'sTitle': 'Six ways to <em>cultivate</em>.',
+      'sIntro': 'Each entry in your archive is treated as a specimen: observed, described, dated, preserved. With the care of someone pressing a leaf between the pages of a book so it will last.',
+      'cat1': 'COLLECTION', 'cat2': 'SEEDING', 'cat3': 'PRESERVING', 'cat4': 'SHARING', 'cat5': 'PRINTING',
+      'sp1c': 'ACROSS THE YEARS',
+      'sp1d': 'Record inherited recipes, herb cards, household tricks, <em>whenever you remember.</em> Jardim organizes by season, by who taught you, by mood. Your memory, and that of those who came before, finally in one place.',
+      'sp2c': 'GENTLE TRANSCRIPTION',
+      'sp2d': 'Record grandma telling you how she makes rice. Jardim transcribes, punctuates, respects the pause. <em>The voice stays</em>, the recipe stays.',
+      'sp3c': 'FAMILY ENCRYPTION',
+      'sp3d': 'Your collection is yours. <em>End-to-end</em> encryption by default. Share only when, and with whom, you want.',
+      'sp4c': 'HOUSEHOLD BOOKS',
+      'sp4d': 'Share a notebook with your family. Each member writes in their own hand, <em>each hand leaves its mark</em>.',
+      'sp5c': 'HOME EDITION',
+      'sp5d': 'At year\'s end, generate a bindable PDF. Saddle-stitched or hardcover — <em>a family book</em>, made by you.',
+      'nTitle': 'The notebook, <em>inside</em>.',
+      'nIntro': 'Each entry is a double-page spread: on the left, the recipe itself; on the right, notes, origins, variations. As a good notebook deserves.',
+      'page1': 'FOLIO 127 — VERSO', 'date1': 'APR · 23 · 2026',
+      'page2': 'FOLIO 127 — RECTO', 'date2': 'MARGIN',
+      'recipe': 'Grandmother Teresa\'s<br><em>rosemary</em> bread',
+      'recipeSub': 'Brought from Braga in 1953, adapted to the São Paulo climate.',
+      'mTime': 'TIME', 'mPão': 'LOAVES', 'mLevel': 'LEVEL', 'mTool': 'TOOL',
+      'hIng': 'Ingredients',
+      'i1': 'Type 1 wheat flour', 'i2': 'Warm water (37°)', 'i3': 'Active dry yeast',
+      'i4': 'Sea salt', 'i5': 'Extra virgin olive oil', 'i6': 'Fresh rosemary, leaves only',
+      'i7': 'Flaky salt to finish',
+      'note1': '"If the rosemary comes from the windowsill pot, even better. Pick before strong sun."',
+      'hMethod': 'Method',
+      'st1': 'Dissolve the <em>yeast</em> in warm water with a pinch of sugar. Wait for it to foam.',
+      'st2': 'Mix flour and salt in a wide bowl. Make a well in the center.',
+      'st3': 'Pour in the yeast and olive oil. Incorporate slowly, <em>with your fingertips</em>.',
+      'st4': 'Knead until the dough releases from your hands — between 10 and 15 minutes of silence.',
+      'st5': 'Let it rest, covered, <em>between two and three hours</em>, until doubled.',
+      'st6': 'Shape, sprinkle with rosemary and flaky salt. Hot oven, 220°C, for 25 minutes.',
+      'hOrigin': 'Origin & variations',
+      'origin': 'This recipe came with my grandmother Teresa, from Braga, in the summer of 1953. In the original she used olive oil from a cousin who made it at home — ours here is from the Mantiqueira range, but the <em>spirit</em> is the same.',
+      'byWho': 'written by · maria',
+      'stamp': 'approved',
+      'tTitle': 'Three <em>letters</em>, one alphabet.',
+      'tIntro': 'Jardim\'s typography celebrates the contrast between the cultured and the domestic — between the printed page and the recipe scrawled in the notebook\'s margin.',
+      'tyD': 'From a seed, a forest grows — if we wait long enough.',
+      'tyB': 'A contemporary humanist with subtle calligraphic character. Legible in long readings, with <span class="hi">beautiful italics</span> for affectionate emphasis.',
+      'pTitle': 'Seven <em>inks</em>, seven moods.',
+      'pIntro': 'Pigments designed to age well. Nothing shouts; everything coexists. The whole palette becomes its opposite in night mode, like a notebook read by candlelight.',
+      'r1': 'Base', 'r2': 'Text', 'r3': 'Secondary', 'r4': 'Accent', 'r5': 'Annotation', 'r6': 'Highlight', 'r7': 'Stamp',
+      'compT': 'COMPONENTS · samples',
+      'bPrim': 'Primary button', 'bGhost': 'Ghost',
+      'fLabel': 'ENTRY TITLE',
+      'ph1': 'Grandma\'s rosemary bread…',
+      'stamp2': 'draft', 'stamp3': 'approved',
+      'motto': 'What is cultivated with<br>care, <em>endures</em>.',
+      'cAbout': 'About',
+      'cAboutText': 'Jardim is an independent studio in São Paulo. We make digital objects with the care of those who read old books and still believe in the future.',
+      'cProduct': 'Product', 'cp1': 'Download', 'cp2': 'Pricing', 'cp3': 'Changelog',
+      'cStudio': 'Studio', 'cs1': 'Manifesto', 'cs2': 'Weekly letter', 'cs3': 'Contact',
+      'cHelp': 'Help', 'ch1': 'Guide', 'ch2': 'FAQ', 'ch3': 'Import data',
+      'cLegal': 'Legal', 'cl1': 'Privacy', 'cl2': 'Terms', 'cl3': 'Licenses',
+      'cMotto': 'Festina lente — make haste slowly'
+    }
+  };
+
+  const ptBtn = document.getElementById('loc-pt');
+  const enBtn = document.getElementById('loc-en');
+
+  function applyLocale(lang) {
+    root.lang = lang === 'en' ? 'en' : 'pt-BR';
+    ptBtn.classList.toggle('active', lang === 'pt');
+    enBtn.classList.toggle('active', lang === 'en');
+    const dict = i18n[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.dataset.i18n;
+      if (dict[k] !== undefined) el.innerHTML = dict[k];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const k = el.dataset.i18nPh;
+      if (dict[k] !== undefined) el.placeholder = dict[k];
+    });
+  }
+  ptBtn.addEventListener('click', () => applyLocale('pt'));
+  enBtn.addEventListener('click', () => applyLocale('en'));
+</script>
+</body>
+</html>
