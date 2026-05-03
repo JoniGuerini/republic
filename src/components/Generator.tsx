@@ -29,10 +29,11 @@ export function Generator({ state, trackKey, tierIdx, pulseKey, onBuy }: Generat
   const locked = !isTierUnlocked(state, trackKey, tierIdx);
   const canAfford = resourceAmount.gte(cost);
   const resourceUnit = track.name.toLowerCase();
+  // Tier 0 feeds the resource pool; every other tier feeds the previous tier
+  // by name (e.g. "Gerador 2" produces "Gerador 1"). Names are kept verbatim
+  // (not lower-cased) since they read as proper nouns.
   const unitLabel =
-    tierIdx === 0
-      ? resourceUnit
-      : track.tiers[tierIdx - 1].namePlural.toLowerCase();
+    tierIdx === 0 ? resourceUnit : track.tiers[tierIdx - 1].name;
 
   // Re-trigger CSS animation on pulseKey change
   useEffect(() => {
@@ -76,7 +77,6 @@ export function Generator({ state, trackKey, tierIdx, pulseKey, onBuy }: Generat
         <div className="gen-locked-identity">
           <div className="gen-locked-icon" aria-hidden="true">{tier.icon}</div>
           <div className="gen-locked-name">{tier.name}</div>
-          <div className="gen-locked-species">{tier.species}</div>
         </div>
         <div className="gen-locked-progress">
           <div className="gen-locked-hint">
@@ -108,7 +108,6 @@ export function Generator({ state, trackKey, tierIdx, pulseKey, onBuy }: Generat
           <div className="gen-name">
             <em>{tier.name}</em>
           </div>
-          <div className="gen-species">{tier.species}</div>
         </div>
         <div>
           <div className="gen-count">{formatInt(owned.floor())}</div>
@@ -140,7 +139,7 @@ export function Generator({ state, trackKey, tierIdx, pulseKey, onBuy }: Generat
         onContextMenu={(e) => e.preventDefault()}
       >
         <span className="buy-action">
-          contratar um <em>{tier.name.toLowerCase()}</em>
+          contratar um <em>{tier.name}</em>
         </span>
         <span className="buy-cost">{formatNum(cost)}</span>
       </button>

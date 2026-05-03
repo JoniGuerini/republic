@@ -18,9 +18,6 @@ function formatRate(n: number): string {
   if (n === 0) return '0/s';
   const abs = Math.abs(n);
   if (abs >= 0.01) return `${formatNum(n)}/s`;
-  // Two significant figures, capped at 6 decimals so we never spit out
-  // ten zeros for unrealistically small values. No minimumFractionDigits
-  // so we don't get cosmetic trailing zeros (e.g. 0.00070 → 0,0007).
   const decimals = Math.min(6, Math.max(2, 1 - Math.floor(Math.log10(abs))));
   const formatted = n.toLocaleString('pt-BR', {
     maximumFractionDigits: decimals,
@@ -32,18 +29,16 @@ function formatRate(n: number): string {
  * Compêndio.
  *
  * Static, design-time documentation for the player. Numbers shown here are
- * the BASE values from CONFIG (no upgrades applied) — the page reads as a
- * neutral reference manual, not a live dashboard. If you want your current
- * numbers, the Trilha and Aprimoramentos pages already show those.
+ * the BASE values from CONFIG — the page reads as a neutral reference
+ * manual, not a live dashboard.
  *
  * Sections:
  *   1. Geradores — full table of the 10 tiers (cost, base production,
  *      what they produce, who unlocks them).
- *   2. Aprimoramentos — how the upgrade system works (formulas + meaning).
- *   3. Recursos — what 'Letras' is and how the production chain feeds it.
- *   4. Números — the formatting rules (K/M/...No → aa/ab/ac…).
- *   5. Atalhos — press-and-hold to buy, hold-to-confirm reset, etc.
- *   6. Persistência — auto-save cadence, manual save, theme/page memory.
+ *   2. Recursos — what 'Recurso' is and how the production chain feeds it.
+ *   3. Números — the formatting rules (K/M/...No → aa/ab/ac…).
+ *   4. Atalhos — press-and-hold to buy, hold-to-confirm reset, etc.
+ *   5. Persistência — auto-save cadence, manual save, theme/page memory.
  */
 export function CompendioPage() {
   return (
@@ -51,7 +46,6 @@ export function CompendioPage() {
       <div className="compendio-content">
         <CompendioIntro />
         <SectionGeradores />
-        <SectionAprimoramentos />
         <SectionRecursos />
         <SectionNumeros />
         <SectionAtalhos />
@@ -71,11 +65,10 @@ function CompendioIntro() {
         <span>compêndio</span>
         <span>·</span>
       </div>
-      <h1 className="compendio-intro-title">A república em letras</h1>
+      <h1 className="compendio-intro-title">Manual da república</h1>
       <p className="compendio-intro-lede">
-        Um manual breve com a mecânica, os números e os pequenos rituais que
-        regem esta república. Os valores aqui são <em>de base</em> — não
-        refletem seus aprimoramentos atuais.
+        Um manual breve com a mecânica e os números que regem o jogo. Os
+        valores aqui são <em>de base</em>.
       </p>
     </header>
   );
@@ -89,10 +82,10 @@ function SectionGeradores() {
       <SectionHeader title="Geradores" subtitle="o quadro dos dez tiers" />
 
       <p className="compendio-prose">
-        Cada gerador tem um <strong>custo fixo</strong> em letras (a quantia
+        Cada gerador tem um <strong>custo fixo</strong> em recurso (a quantia
         que você precisa acumular para comprar uma unidade) e produz, por
         segundo, unidades do <strong>tier imediatamente abaixo</strong>. Só o
-        tier <em>I — Escritor</em> produz o recurso bruto, <em>letras</em>.
+        primeiro tier — <em>Gerador 1</em> — produz o recurso bruto.
       </p>
 
       {TRACK_KEYS.map((trackKey) => {
@@ -129,9 +122,6 @@ function SectionGeradores() {
                             <span className="compendio-gen-name">
                               <em>{tier.name}</em>
                             </span>
-                            <span className="compendio-gen-species">
-                              {tier.species}
-                            </span>
                           </span>
                         </span>
                       </td>
@@ -151,82 +141,9 @@ function SectionGeradores() {
 
       <p className="compendio-prose compendio-note">
         <strong>Desbloqueio:</strong> um tier aparece quando você acumula, ao
-        menos uma vez, a quantia em letras igual ao seu custo. Uma vez
+        menos uma vez, a quantia em recurso igual ao seu custo. Uma vez
         desbloqueado, fica desbloqueado para sempre — mesmo que você gaste
         tudo depois.
-      </p>
-    </section>
-  );
-}
-
-/* ─────────── Section: Aprimoramentos ─────────── */
-
-function SectionAprimoramentos() {
-  return (
-    <section className="compendio-section">
-      <SectionHeader
-        title="Aprimoramentos"
-        subtitle="multiplicadores e redutores"
-      />
-
-      <p className="compendio-prose">
-        Existem dois tipos de aprimoramento, ambos com{' '}
-        <strong>níveis infinitos</strong> e ambos pagos em letras:
-      </p>
-
-      <div className="compendio-cards">
-        <div className="compendio-card">
-          <div className="compendio-card-eyebrow">produção</div>
-          <h3 className="compendio-card-title">×2 por nível</h3>
-          <p className="compendio-card-body">
-            Cada nível <strong>dobra</strong> a produção por segundo. Nível N
-            equivale a um multiplicador de <span className="mono">2ⁿ</span>.
-          </p>
-        </div>
-        <div className="compendio-card">
-          <div className="compendio-card-eyebrow">custo</div>
-          <h3 className="compendio-card-title">÷2 por nível</h3>
-          <p className="compendio-card-body">
-            Cada nível <strong>corta o custo pela metade</strong>. Nível N
-            equivale a um multiplicador de{' '}
-            <span className="mono">0,5ⁿ</span>. O preço nunca desce abaixo de
-            <strong> 1 letra</strong>.
-          </p>
-        </div>
-      </div>
-
-      <p className="compendio-prose">
-        Cada gerador tem o seu par de aprimoramentos (produção e custo). Há
-        também um par <strong>global</strong> que se aplica a{' '}
-        <em>todos</em> os geradores ao mesmo tempo — mais caros, mas
-        cumulativos com os individuais.
-      </p>
-
-      <div className="compendio-formula">
-        <div className="compendio-formula-row">
-          <span className="compendio-formula-label">produção real</span>
-          <code className="compendio-formula-code">
-            base × 2<sup>nv. ind.</sup> × 2<sup>nv. global</sup>
-          </code>
-        </div>
-        <div className="compendio-formula-row">
-          <span className="compendio-formula-label">custo real</span>
-          <code className="compendio-formula-code">
-            max(1, ⌈base × 0,5<sup>nv. ind.</sup> × 0,5<sup>nv. global</sup>⌉)
-          </code>
-        </div>
-        <div className="compendio-formula-row">
-          <span className="compendio-formula-label">custo do nível N+1</span>
-          <code className="compendio-formula-code">
-            10 × baseCost × 2,5<sup>N</sup>
-          </code>
-        </div>
-      </div>
-
-      <p className="compendio-prose compendio-note">
-        Aprimoramentos individuais cuja unidade você ainda não comprou
-        aparecem <em>indisponíveis</em> no compêndio de aprimoramentos —
-        compre ao menos uma unidade do gerador para liberá-los.
       </p>
     </section>
   );
@@ -237,18 +154,18 @@ function SectionAprimoramentos() {
 function SectionRecursos() {
   return (
     <section className="compendio-section">
-      <SectionHeader title="Recursos" subtitle="o que se acumula" />
+      <SectionHeader title="Recurso" subtitle="o que se acumula" />
 
       <p className="compendio-prose">
-        Há um único recurso bruto: <strong>letras</strong>. Tudo o que se
-        produz, em última instância, é letra — mas a cadeia chega lá em
-        cascata: <em>Civilizações</em> produzem <em>Idiomas</em>, que
-        produzem <em>Cânones</em>, que produzem <em>Universidades</em>… até o{' '}
-        <em>Escritor</em>, que finalmente produz letras.
+        Há um único recurso bruto: <strong>recurso</strong>. Tudo o que se
+        produz, em última instância, vira recurso — mas a cadeia chega lá em
+        cascata: o <em>Gerador 10</em> produz <em>Geradores 9</em>, que
+        produzem <em>Geradores 8</em>… até o <em>Gerador 1</em>, que
+        finalmente produz recurso.
       </p>
 
       <div className="compendio-chain" aria-hidden="true">
-        {CONFIG.letters.tiers
+        {CONFIG.recurso.tiers
           .slice()
           .reverse()
           .map((tier, idx, arr) => (
@@ -264,14 +181,14 @@ function SectionRecursos() {
         <div className="compendio-chain-step compendio-chain-resource">
           <span className="compendio-chain-arrow">→</span>
           <span className="compendio-chain-name">
-            <em>Letras</em>
+            <em>Recurso</em>
           </span>
         </div>
       </div>
 
       <p className="compendio-prose compendio-note">
-        Você começa a partida com <strong>10 letras</strong> — exatamente o
-        custo de um Escritor. A partir daí, é só letrar.
+        Você começa a partida com <strong>10 de recurso</strong> — exatamente
+        o custo do primeiro <em>Gerador 1</em>.
       </p>
     </section>
   );
@@ -367,8 +284,7 @@ function SectionAtalhos() {
         <li className="compendio-shortcut">
           <span className="compendio-shortcut-key">clique</span>
           <span className="compendio-shortcut-desc">
-            no botão <em>contratar</em> ou <em>aprimorar</em> compra uma
-            unidade.
+            no botão <em>contratar</em> compra uma unidade.
           </span>
         </li>
         <li className="compendio-shortcut">
@@ -376,7 +292,7 @@ function SectionAtalhos() {
           <span className="compendio-shortcut-desc">
             o mesmo botão entra em modo automático após um pequeno atraso e
             acelera o ritmo de compra a cada disparo, parando quando você
-            soltar ou ficar sem letras.
+            soltar ou ficar sem recurso.
           </span>
         </li>
         <li className="compendio-shortcut">

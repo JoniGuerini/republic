@@ -1,135 +1,75 @@
-import type { GameConfig } from '../types/game';
-import {
-  FeatherIcon,
-  PressIcon,
-  BookIcon,
-  LibraryIcon,
-  TranslatorIcon,
-  AcademyIcon,
-  UniversityIcon,
-  CanonIcon,
-  LanguageIcon,
-  CivilizationIcon,
-} from './icons';
+import type { GameConfig, TierDef } from '../types/game';
+import { GeneratorGlyphIcon } from './icons';
+
+const TIER_COUNT = 100;
+
+/** Cost curve.
+ *
+ *   log10(cost(i)) = 1 + a·i + b·i·(i−1)/2
+ *
+ * which is the same as a "geometric" curve where the multiplier between
+ * consecutive tiers is `10^(a + b·(i−1))` — it grows linearly with the
+ * tier index, so the late game gets exponentially harder than the early
+ * game without a single sudden cliff.
+ *
+ * With (a=1.5, b=0.05):
+ *   tier  0 →             10        (×–   start)
+ *   tier  1 →            316        (×31.6)
+ *   tier  2 →         11 220        (×35.5)
+ *   tier 10 → ≈ 1 × 10¹⁵            (×~50)
+ *   tier 50 → ≈ 1 × 10⁷⁵            (×~530)
+ *   tier 99 → ≈ 1 × 10³⁹²           (×~10⁵)
+ *
+ * `break_eternity.js` parses these via `new Decimal("1.23e392")` without
+ * losing precision; `formatNum` already promotes anything past 1e33 to
+ * the alphabetic suffix family (aa, ab, …, aaa, …). */
+const COST_A = 1.5;
+const COST_B = 0.05;
+
+/** Production curve — geometric decay, much gentler than the cost growth
+ *  on purpose so the player still wants many of each tier instead of just
+ *  one of the top one. */
+const PROD_BASE = 0.2;
+const PROD_DECAY = 0.95;
+
+/** Render a base-10 logarithm as a Decimal-parseable string ("1.234e567").
+ *  Required because `Math.pow(10, x)` returns Infinity for x ≳ 308 — we
+ *  manually extract the integer/fractional parts of the exponent and
+ *  compute only the in-range mantissa. */
+function pow10String(log10: number): string {
+  const intPart = Math.floor(log10);
+  const fracPart = log10 - intPart;
+  // Mantissa is always in [1, 10) by construction.
+  const mantissa = Math.pow(10, fracPart);
+  return `${mantissa.toFixed(6)}e${intPart}`;
+}
+
+function costForTier(i: number): string {
+  const log10 = 1 + COST_A * i + (COST_B * i * (i - 1)) / 2;
+  return pow10String(log10);
+}
+
+function productionForTier(i: number): number {
+  return PROD_BASE * Math.pow(PROD_DECAY, i);
+}
+
+function makeTier(idx: number): TierDef {
+  const number = idx + 1;
+  return {
+    name: `Gerador ${number}`,
+    baseCost: costForTier(idx),
+    baseProduction: productionForTier(idx),
+    icon: <GeneratorGlyphIcon number={number} color="var(--terracotta-d)" />,
+    unlocksAt: idx,
+  };
+}
 
 export const CONFIG: GameConfig = {
-  letters: {
-    name: 'Letras',
-    motto: 'a tinta que não seca',
-    resourceKey: 'letters',
-    /* ─── Cost curve ───
-     * Each tier has a FIXED buy cost — owning more of a generator does NOT
-     * raise its price. The curve below is purely the unlock/initial price
-     * ladder; cost-reduction upgrades still scale the price down (floor: 1).
-     * Spans 10 → 1 No (1×10³⁰), 29 orders of magnitude across 9 jumps.
-     *   I    →  10           (start)
-     *   II   →  100          ×10
-     *   III  →  2 K          ×20
-     *   IV   →  50 K         ×25
-     *   V    →  1.5 M        ×30
-     *   VI   →  60 M         ×40
-     *   VII  →  3 B          ×50
-     *   VIII →  200 T        ×~67
-     *   IX   →  20 Qi        ×100
-     *   X    →  1 No         ×50K (the cathedral leap)
-     */
-    tiers: [
-      // Cost curve: log10(cost(tier)) = 1 + (tier/9)^2.5 × 199
-      // → tier 0 = 10, tier 9 = 1e200 (rounded to "tidy" magnitudes).
-      // Production curve: baseProduction(0)/1.7^tier — decays slower than
-      // costs grow on purpose, so the player still wants many of each
-      // tier instead of just one of the top one.
-      {
-        name: 'Escritor',
-        namePlural: 'Escritores',
-        species: 'Scriptor solitarius',
-        baseCost: 10,
-        baseProduction: 0.2,
-        icon: <FeatherIcon color="var(--terracotta-d)" />,
-        unlocksAt: 0,
-      },
-      {
-        name: 'Tipógrafo',
-        namePlural: 'Tipógrafos',
-        species: 'Typographus mechanicus',
-        baseCost: 70,
-        baseProduction: 0.12,
-        icon: <PressIcon color="var(--terracotta-d)" />,
-        unlocksAt: 1,
-      },
-      {
-        name: 'Editor',
-        namePlural: 'Editores',
-        species: 'Editor severus',
-        baseCost: 5e5, // 500 K
-        baseProduction: 0.07,
-        icon: <BookIcon color="var(--terracotta-d)" />,
-        unlocksAt: 2,
-      },
-      {
-        name: 'Biblioteca',
-        namePlural: 'Bibliotecas',
-        species: 'Bibliotheca aeterna',
-        baseCost: 6e13, // 60 T
-        baseProduction: 0.04,
-        icon: <LibraryIcon color="var(--terracotta-d)" />,
-        unlocksAt: 3,
-      },
-      {
-        name: 'Tradutor',
-        namePlural: 'Tradutores',
-        species: 'Translator polyglottus',
-        baseCost: 2e27,
-        baseProduction: 0.025,
-        icon: <TranslatorIcon color="var(--terracotta-d)" />,
-        unlocksAt: 4,
-      },
-      {
-        name: 'Academia',
-        namePlural: 'Academias',
-        species: 'Academia litterarum',
-        baseCost: 6e46,
-        baseProduction: 0.014,
-        icon: <AcademyIcon color="var(--terracotta-d)" />,
-        unlocksAt: 5,
-      },
-      {
-        name: 'Universidade',
-        namePlural: 'Universidades',
-        species: 'Universitas studiorum',
-        baseCost: 2e73,
-        baseProduction: 0.0083,
-        icon: <UniversityIcon color="var(--terracotta-d)" />,
-        unlocksAt: 6,
-      },
-      {
-        name: 'Cânon',
-        namePlural: 'Cânones',
-        species: 'Canon perennis',
-        baseCost: 2e107,
-        baseProduction: 0.0049,
-        icon: <CanonIcon color="var(--terracotta-d)" />,
-        unlocksAt: 7,
-      },
-      {
-        name: 'Idioma',
-        namePlural: 'Idiomas',
-        species: 'Lingua viva',
-        baseCost: 3e149,
-        baseProduction: 0.0029,
-        icon: <LanguageIcon color="var(--terracotta-d)" />,
-        unlocksAt: 8,
-      },
-      {
-        name: 'Civilização',
-        namePlural: 'Civilizações',
-        species: 'Civilizatio scripta',
-        baseCost: 1e200,
-        baseProduction: 0.0017,
-        icon: <CivilizationIcon color="var(--terracotta-d)" />,
-        unlocksAt: 9,
-      },
-    ],
+  recurso: {
+    name: 'Recurso',
+    motto: 'uma trilha de geradores',
+    resourceKey: 'recurso',
+    tiers: Array.from({ length: TIER_COUNT }, (_, i) => makeTier(i)),
   },
 };
 

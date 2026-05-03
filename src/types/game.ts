@@ -1,16 +1,18 @@
 import type { ReactNode } from 'react';
 import type Decimal from 'break_eternity.js';
 
-export type TrackKey = 'letters';
+export type TrackKey = 'recurso';
 
 export interface TierDef {
+  /** Display name. Identifies the generator in the UI ("Gerador 1"…"Gerador 10"). */
   name: string;
-  namePlural: string;
-  species: string;
   /** Fixed buy cost for this tier (also the unlock threshold). The price is
-   *  flat — owning more of a generator does NOT increase its cost. Cost-
-   *  reduction upgrades still apply on top, with a floor of 1 letter. */
-  baseCost: number;
+   *  flat — owning more of a generator does NOT increase its cost.
+   *
+   *  Stored as a string so it can carry exponents beyond float64's ~1e308
+   *  ceiling. `break_eternity.js` parses these directly via `new Decimal(str)`. */
+  baseCost: string;
+  /** Units produced per second per owned unit (continuous production). */
   baseProduction: number;
   icon: ReactNode;
   unlocksAt: number;
@@ -25,23 +27,6 @@ export interface TrackDef {
 
 export type GameConfig = Record<TrackKey, TrackDef>;
 
-/** Upgrade levels for a single generator (one entry per tier). */
-export interface GeneratorUpgradeLevels {
-  /** Production multiplier upgrade. Effect at level N: ×(2^N) on this tier's
-   *  production rate. Level 0 = no bonus. */
-  production: number;
-  /** Cost reduction upgrade. Effect at level N: ×(0.5^N) on this tier's
-   *  buy cost. Level 0 = no reduction. */
-  cost: number;
-}
-
-/** Upgrade levels that apply across all tracks/tiers. Same effect curve as
- *  the per-generator upgrades, applied multiplicatively on top of them. */
-export interface GlobalUpgradeLevels {
-  production: number;
-  cost: number;
-}
-
 export interface GameState {
   /** Accumulated resources per track. Stored as Decimal so the running total
    *  has no practical upper bound (idle games quickly outrun float64). */
@@ -52,9 +37,4 @@ export interface GameState {
   generators: Record<TrackKey, Decimal[]>;
   milestones: Set<string>;
   totalActions: number;
-  /** Per-generator upgrade levels. Same shape as `generators` (one entry per
-   *  tier per track). Pre-populated to length CONFIG[track].tiers.length. */
-  upgrades: Record<TrackKey, GeneratorUpgradeLevels[]>;
-  /** Single set of global multiplier upgrades shared across all tracks. */
-  globalUpgrades: GlobalUpgradeLevels;
 }

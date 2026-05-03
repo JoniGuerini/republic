@@ -1,6 +1,5 @@
 import Decimal from 'break_eternity.js';
 import { CONFIG } from './config';
-import { totalCostMultiplier, totalProductionMultiplier } from './upgrades';
 import type { GameState, TrackKey } from '../types/game';
 
 /* ─────────── Number formatting ───────────
@@ -18,7 +17,7 @@ import type { GameState, TrackKey } from '../types/game';
  * sequence simply continues forever.
  */
 const NAMED_SUFFIXES = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No'];
-const ALPHA_START_INDEX = NAMED_SUFFIXES.length; // 11 → would be Dc
+const ALPHA_START_INDEX = NAMED_SUFFIXES.length;
 
 /** Excel-style alphabetic label, zero-indexed: 0='a', 25='z', 26='aa', 27='ab', 701='zz', 702='aaa', … */
 function alphaLabel(zeroBasedIndex: number): string {
@@ -32,11 +31,8 @@ function alphaLabel(zeroBasedIndex: number): string {
 }
 
 function suffixForGroup(group: number): string {
-  // group = floor(log1000(n)). 1 => K, 2 => M, …, 10 => No, 11+ => aa, ab, …
-  // We start the alphabetic sequence at "aa" (skip single letters) so the
-  // very first alpha suffix has the same visual weight as the named ones.
   if (group < ALPHA_START_INDEX) return NAMED_SUFFIXES[group];
-  return alphaLabel(group - ALPHA_START_INDEX + 26); // 11 → alphaLabel(26) = 'aa'
+  return alphaLabel(group - ALPHA_START_INDEX + 26);
 }
 
 /** Coerce any value into a Decimal. null/undefined/NaN/non-numeric all
@@ -57,17 +53,9 @@ export function toDecimal(value: unknown): Decimal {
   return new Decimal(0);
 }
 
-/** Format a Decimal ≥ 10.000 with a 2-decimal suffix, promoting to the next
- *  group if rounding would overflow (e.g. 999.999 → 1.00M, not 1000.00K).
- *
- *  Works for arbitrarily-large Decimals: we extract the magnitude via
- *  log10() and keep the leading-3-digit scaled value as a regular float,
- *  which is safe because mantissas always fit in [1, 1000).
- */
 function formatWithSuffix(n: Decimal): string {
   const log10 = n.log10().toNumber();
   let group = Math.floor(log10 / 3);
-  // Compute the 1–999.999 mantissa: 10^(log10 - 3*group)
   let scaled = Math.pow(10, log10 - 3 * group);
   if (scaled >= 999.995) {
     group += 1;
@@ -76,8 +64,10 @@ function formatWithSuffix(n: Decimal): string {
   return scaled.toFixed(2) + suffixForGroup(group);
 }
 
-/** Big-number formatter for live/derived values (rates, costs, totals). */
-export function formatNum(n: Decimal | number | null | undefined): string {
+/** Big-number formatter for live/derived values (rates, costs, totals).
+ *  Accepts strings too so it can format Decimal-encoded values straight
+ *  from CONFIG (where late-tier baseCosts overflow float64). */
+export function formatNum(n: Decimal | number | string | null | undefined): string {
   const v = toDecimal(n);
   if (v.lt(0)) return '-' + formatNum(v.neg());
   if (v.lt(10)) return v.toNumber().toFixed(2);
@@ -89,7 +79,7 @@ export function formatNum(n: Decimal | number | null | undefined): string {
 
 /** Integer formatter for owned counts, action totals, etc. Same suffix
  *  rules as formatNum, but never shows decimals below 10.000. */
-export function formatInt(n: Decimal | number | null | undefined): string {
+export function formatInt(n: Decimal | number | string | null | undefined): string {
   const v = toDecimal(n);
   if (v.lt(0)) return '-' + formatInt(v.neg());
   if (v.lt(10000)) return Math.floor(v.toNumber()).toLocaleString('pt-BR');
@@ -98,25 +88,21 @@ export function formatInt(n: Decimal | number | null | undefined): string {
 
 /* ─────────── Game math ─────────── */
 
-export function costOf(state: GameState, trackKey: TrackKey, tierIdx: number): Decimal {
+/** Buy cost for one unit of a given generator. Flat by design — owning
+ *  more does NOT inflate the price. */
+export function costOf(_state: GameState, trackKey: TrackKey, tierIdx: number): Decimal {
   const tier = CONFIG[trackKey].tiers[tierIdx];
-  // Flat price by design: owning N copies of a generator does NOT inflate
-  // its cost — each tier always costs `baseCost`, modulated only by the
-  // combined cost-reduction upgrades (individual × global). The hard floor
-  // of 1 letter prevents the price from ever reading as "free".
-  const reduction = totalCostMultiplier(state, trackKey, tierIdx);
-  const raw = new Decimal(tier.baseCost).mul(reduction);
-  return Decimal.max(1, raw.ceil());
+  return new Decimal(tier.baseCost);
 }
 
+/** Production rate per second for a given tier of generators. */
 export function productionPerSecond(
   state: GameState,
   trackKey: TrackKey,
   tierIdx: number,
 ): Decimal {
   const tier = CONFIG[trackKey].tiers[tierIdx];
-  const mult = totalProductionMultiplier(state, trackKey, tierIdx);
-  return state.generators[trackKey][tierIdx].mul(tier.baseProduction).mul(mult);
+  return state.generators[trackKey][tierIdx].mul(tier.baseProduction);
 }
 
 /* ─────────── Unlocks ─────────── */
@@ -130,8 +116,7 @@ export function isTierUnlocked(state: GameState, trackKey: TrackKey, tierIdx: nu
 }
 
 /** Returns the set of unlock-milestone keys that should already be granted
- *  given a state's current resources. Used to backfill saves created before
- *  unlocks were sticky, and as a defensive measure on load. */
+ *  given a state's current resources. Used as a defensive measure on load. */
 export function deriveUnlocksFromResources(state: GameState): string[] {
   const out: string[] = [];
   (Object.keys(CONFIG) as TrackKey[]).forEach((trackKey) => {
@@ -158,21 +143,18 @@ export function applyTick(state: GameState, dtSeconds: number): TickResult {
   if (dtSeconds <= 0) return { state, unlocked: [] };
 
   const resources: Record<TrackKey, Decimal> = {
-    letters: state.resources.letters,
+    recurso: state.resources.recurso,
   };
   const generators: Record<TrackKey, Decimal[]> = {
-    letters: [...state.generators.letters],
+    recurso: [...state.generators.recurso],
   };
 
   (Object.keys(CONFIG) as TrackKey[]).forEach((trackKey) => {
     const track = CONFIG[trackKey];
     for (let i = track.tiers.length - 1; i >= 0; i--) {
       const tier = track.tiers[i];
-      const mult = totalProductionMultiplier(state, trackKey, i);
-      // produced = owned × baseProduction × mult × dt
       const produced = generators[trackKey][i]
         .mul(tier.baseProduction)
-        .mul(mult)
         .mul(dtSeconds);
       if (produced.lte(0)) continue;
       if (i === 0) {
@@ -212,15 +194,11 @@ export function applyTick(state: GameState, dtSeconds: number): TickResult {
 
 export function initialState(): GameState {
   return {
-    resources: { letters: new Decimal(10) },
+    resources: { recurso: new Decimal(10) },
     generators: {
-      letters: CONFIG.letters.tiers.map(() => new Decimal(0)),
+      recurso: CONFIG.recurso.tiers.map(() => new Decimal(0)),
     },
     milestones: new Set<string>(),
     totalActions: 0,
-    upgrades: {
-      letters: CONFIG.letters.tiers.map(() => ({ production: 0, cost: 0 })),
-    },
-    globalUpgrades: { production: 0, cost: 0 },
   };
 }

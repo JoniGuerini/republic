@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import type { GameState, TrackKey } from '../types/game';
 import { CONFIG, TRACK_KEYS } from '../game/config';
-import { formatNum, productionPerSecond } from '../game/utils';
-import { LettersGlyphIcon } from '../game/icons';
+import { formatNum, isTierUnlocked, productionPerSecond } from '../game/utils';
+import { ResourceGlyphIcon } from '../game/icons';
 import { Generator } from './Generator';
 
 interface TrackHeaderProps {
@@ -18,11 +18,11 @@ interface TrackBodyProps {
 }
 
 const TRACK_ICONS: Record<TrackKey, ReactNode> = {
-  letters: <LettersGlyphIcon />,
+  recurso: <ResourceGlyphIcon />,
 };
 
 const TRACK_RATE_NOUN: Record<TrackKey, string> = {
-  letters: 'escritas',
+  recurso: 'gerados',
 };
 
 export function TrackHeader({ state, trackKey }: TrackHeaderProps) {
@@ -55,9 +55,15 @@ export function TrackHeader({ state, trackKey }: TrackHeaderProps) {
 export function TrackBody({ state, trackKey, pulseKeys, onBuy }: TrackBodyProps) {
   const track = CONFIG[trackKey];
 
+  // Show every unlocked tier and the first locked one as a "next-up" teaser
+  // (with its unlock progress bar). Tiers further down stay hidden until
+  // they unlock, so the trail keeps growing as the player progresses
+  // instead of dumping the full 100-tier ladder upfront.
+  const visibleCount = computeVisibleTierCount(state, trackKey);
+
   return (
     <div className={`track-body ${trackKey}`}>
-      {track.tiers.map((_, idx) => (
+      {track.tiers.slice(0, visibleCount).map((_, idx) => (
         <Generator
           key={idx}
           state={state}
@@ -69,4 +75,17 @@ export function TrackBody({ state, trackKey, pulseKeys, onBuy }: TrackBodyProps)
       ))}
     </div>
   );
+}
+
+/** Returns how many tier cards to render: every unlocked tier plus the first
+ *  locked one (if any). When all tiers are unlocked, returns the full count. */
+function computeVisibleTierCount(state: GameState, trackKey: TrackKey): number {
+  const total = CONFIG[trackKey].tiers.length;
+  for (let i = 1; i < total; i++) {
+    if (!isTierUnlocked(state, trackKey, i)) {
+      // Include the first locked tier so its unlock progress bar is visible.
+      return i + 1;
+    }
+  }
+  return total;
 }

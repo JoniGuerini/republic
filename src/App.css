@@ -1354,8 +1354,8 @@ header {
   font-weight: 500;
 }
 
-.track-head.letters h2,
-.track-head.letters .track-head-stats .value {
+.track-head.recurso h2,
+.track-head.recurso .track-head-stats .value {
   color: var(--terracotta-d);
 }
 
@@ -1620,7 +1620,7 @@ header {
   border-color: var(--ink-faded);
 }
 
-.track-body.letters .buy-btn:hover:not(:disabled) {
+.track-body.recurso .buy-btn:hover:not(:disabled) {
   background: var(--terracotta);
   border-color: var(--terracotta);
 }
